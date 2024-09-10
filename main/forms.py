@@ -2,7 +2,19 @@ from django import forms
 from .models import Order, Contact, Product
 
 
-class CheckoutForm(forms.ModelForm):
+class ModelFormWithClassMixin(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if type(field.widget) is not forms.CheckboxInput:
+                # Add a CSS class to each widget
+                if 'class' in field.widget.attrs:
+                    field.widget.attrs['class'] += ' form-control'
+                else:
+                    field.widget.attrs['class'] = 'form-control'
+
+
+class CheckoutForm(ModelFormWithClassMixin, forms.ModelForm):
 
     class Meta:
         model = Order
@@ -12,8 +24,7 @@ class CheckoutForm(forms.ModelForm):
         }
 
 
-class ContactForm(forms.ModelForm):
-
+class ContactForm(ModelFormWithClassMixin, forms.ModelForm):
     class Meta:
         model = Contact
         product = forms.ModelMultipleChoiceField(queryset=Product.objects.all(),
@@ -22,16 +33,11 @@ class ContactForm(forms.ModelForm):
         fields = ['type', 'title', 'message', 'products', 'preferred_contact', 'response_required', 'email',
                   'mobile', 'home_phone', 'rating']
         widgets = {
-            'products': forms.SelectMultiple(attrs={'class': 'form-control'}),
-            'response_required': forms.CheckboxInput(attrs={'class': 'form-control'}),
-            'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'type': forms.Select(attrs={'class': 'form-control'}),
-            'message': forms.TextInput(attrs={'class': 'form-control'}),
-            'preferred_contact': forms.Select(attrs={'class': 'form-control'}),
-            'email': forms.TextInput(attrs={'class': 'form-control'}),
-            'mobile': forms.TextInput(attrs={'class': 'form-control'}),
-            'home_phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'rating': forms.Select(attrs={'class': 'form-control'}),
+            'products': forms.SelectMultiple(),
+            'response_required': forms.CheckboxInput(),
+            'type': forms.Select(),
+            'preferred_contact': forms.Select(),
+            'rating': forms.Select(),
         }
 
     def __init__(self, *args, **kwargs):

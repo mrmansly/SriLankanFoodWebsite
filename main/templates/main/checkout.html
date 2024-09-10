@@ -10,7 +10,7 @@
         <form method="post" class="form-container container" action="/checkout/">
             {%  csrf_token %}
             {{ form.as_div }}
-            <button class="align-right action-button btn btn-primary" name="form_type" value="checkout" type="submit">Confirm Order</button>
+            <button class="align-right action-button btn btn-primary my-3" name="form_type" value="checkout" type="submit">Confirm Order</button>
         </form>
 
         {% include 'main/order-details.html' %}

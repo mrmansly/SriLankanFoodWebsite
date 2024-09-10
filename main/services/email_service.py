@@ -15,8 +15,6 @@ def send_email(to_email, subject, html_content, plain_content):
 
     try:
         email.send()
-        # Connect to the SMTP Server
-        print("Email sent successfully!")
     except Exception as e:
         print(f"Error send email: {e}")
 

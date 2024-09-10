@@ -12,7 +12,7 @@
             const productInput = document.getElementById("id_products")
             const ratingInput = document.getElementById("id_rating");
 
-            typeInput.addEventListener('change', function(event) {
+            typeInput.addEventListener('change', function() {
                 setState(typeInput, productInput, ratingInput)
             });
 
@@ -35,11 +35,11 @@
                     <div class="form-container container">
                         {{ form.as_div }}
                     </div>
-                    <button class="align-right action-button btn btn-primary" type="submit">Submit Feedback</button>
+                    <button class="align-right action-button btn btn-primary my-3" type="submit">Submit Feedback</button>
                 </form>
             </div>
             <div class="col-12 col-md-6 pt-5">
-                <img class="image-frame" src="{% static 'images/family/old_school_recipes.png' %}" alt="Old School Recipes">
+                <img class="image-frame" src="{% static 'images/family/lola_cooking_potato.png' %}" alt="Old School Recipes">
             </div>
         </div>
     </div>
