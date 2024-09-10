@@ -1,0 +1,22 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block window_title %}Checkout{% endblock %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+
+    {% if item_list.exists %}
+        <form method="post" class="form-container container" action="/checkout/">
+            {%  csrf_token %}
+            {{ form.as_div }}
+            <button class="align-right action-button btn btn-primary" name="form_type" value="checkout" type="submit">Confirm Order</button>
+        </form>
+
+        {% include 'main/order-details.html' %}
+    {% else %}
+        <h1>The Rice Cooker is empty</h1>
+        <p>Add some items from the <a href="/products">Menu</a> to fill it (and your tummy) up!</p>
+    {% endif %}
+
+{% endblock %}

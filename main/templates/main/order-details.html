@@ -1,0 +1,91 @@
+{% load static %}
+{% load custom_filters %}
+
+<link rel="stylesheet" href="{% static 'main.css' %}">
+
+<div>
+
+    <table class="table table-striped table-hover table-bordered w-100">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Unit Price</th>
+            <th scope="col">Price</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for item in item_list %}
+            <tr class="align-middle">
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ item.product.name }}</td>
+                <td>
+                    <form method="post" action="#">
+                        {% csrf_token %}
+                            {% if update_allowed %}
+                                <div class="d-flex gap-2 align-items-center">
+                                <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                <label>
+                                    <input type="number" name="quantity" class="form-control cart-quantity" value="{{ item.quantity }}">
+                                </label>
+                                <button name="form_type" value="quantity" type="submit" class="action-button btn btn-primary">Update</button>
+                                </div>
+                            {% else %}
+                                <div class="d-flex justify-content-end">{{ item.quantity }}</div>
+                            {% endif %}
+                    </form>
+                </td>
+                <td class="text-end">${{ item.product.price|floatformat:2 }}</td>
+                <td class="text-end">${{ item.quantity|multiply:item.product.price }}</td>
+            </tr>
+        {% endfor %}
+
+        <tr>
+            <th class="border-top-double" scope="row"></th>
+            <td class="border-top-double"></td>
+            <td class="border-top-double"></td>
+            <td class="border-top-double text-end">Sub Total</td>
+            <td class="text-end border-top-double">${{ price_data.net_cost|floatformat:2 }}</td>
+        </tr>
+
+        {% if price_data.discount > 0 %}
+            <tr>
+                <th scope="row"></th>
+                <td></td>
+                <td></td>
+                <td class="text-end">Discount</td>
+                <td class="text-end">- ${{ price_data.discount|floatformat:2 }}</td>
+            </tr>
+
+            <tr>
+                <th scope="row"></th>
+                <td></td>
+                <td></td>
+                <td class="text-end border-top-double">Revised Sub Total</td>
+                <td class="text-end border-top-double">${{ price_data.revised_net_cost|floatformat:2 }}</td>
+            </tr>
+        {% endif %}
+
+
+        <tr>
+            <th scope="row"></th>
+            <td></td>
+            <td></td>
+            <td class="text-end">GST (10%)</td>
+            <td class="text-end">${{ price_data.gst|floatformat:2 }}</td>
+        </tr>
+
+        <tr>
+            <th scope="row"></th>
+            <td></td>
+            <td></td>
+            <td class="text-end fw-bold border-top-double-2 border-bottom-double">Total</td>
+            <td class="text-end fw-bold border-top-double-2 border-bottom-double">${{ price_data.total_price|floatformat:2 }}</td>
+        </tr>
+
+        </tbody>
+    </table>
+
+</div>

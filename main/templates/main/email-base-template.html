@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Email Confirmation</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div class="container">
+        <div class="header container-fluid">
+            <h1>{{ subject }}</h1>
+        </div>
+        <div class="content">
+            {% block body %}
+            {% endblock %}
+        </div>
+        <div class="footer">
+            <p>Thank you for choosing our service!</p>
+        </div>
+    </div>
+</body>
+</html>

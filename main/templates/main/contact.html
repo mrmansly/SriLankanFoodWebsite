@@ -1,0 +1,46 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block window_title %}Contact Us{% endblock %}
+{% block title %}Contact Us{% endblock %}
+
+{% block head_content %}
+    <script src="{% static 'js/contact-form-state-controller.js' %}"></script>
+    <script type="text/javascript">
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeInput = document.getElementById("id_type")
+            const productInput = document.getElementById("id_products")
+            const ratingInput = document.getElementById("id_rating");
+
+            typeInput.addEventListener('change', function(event) {
+                setState(typeInput, productInput, ratingInput)
+            });
+
+        });
+
+    </script>
+{% endblock %}
+
+{% block content %}
+
+    <div class="main-content-header-image">
+        <img src="{% static 'images/family/shelf1.png' %}" alt="Pots and Pans">
+    </div>
+
+    <div class="container">
+        <div class="row align-items-start">
+            <div class="col-12 col-md-6">
+                <form method="post" action="/contact/">
+                    {% csrf_token %}
+                    <div class="form-container container">
+                        {{ form.as_div }}
+                    </div>
+                    <button class="align-right action-button btn btn-primary" type="submit">Submit Feedback</button>
+                </form>
+            </div>
+            <div class="col-12 col-md-6 pt-5">
+                <img class="image-frame" src="{% static 'images/family/old_school_recipes.png' %}" alt="Old School Recipes">
+            </div>
+        </div>
+    </div>
+{% endblock %}

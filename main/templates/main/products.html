@@ -1,0 +1,257 @@
+{% extends 'main/base.html' %}
+
+{% load static %}
+{% load custom_filters %}
+
+{% block head_content %}
+
+
+    <script src="{% static 'main/' %}"></script>
+    <script type="text/javascript">
+
+        function getCSRFToken() {
+            return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        }
+
+        function getCartId() {
+            return document.querySelector('meta[name="cart_id"]').getAttribute('content');
+        }
+
+        function openModal(imageSrc, title, description) {
+            const modal = document.getElementById("imagePreviewModal");
+            const modalImg = document.getElementById("previewImage");
+            const modalTitle = document.getElementById("previewImageTitle");
+            const modalDescription = document.getElementById("previewImageDescription");
+
+            modal.style.display = "block";
+            modalImg.src = imageSrc;
+            modalTitle.textContent = title;
+            modalDescription.textContent = description;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById("imagePreviewModal");
+            modal.style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            const modal = document.getElementById("imagePreviewModal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener("submit", (event) => {
+
+                    const formData = new FormData(event.target);
+                    event.preventDefault();
+
+                    fetch("http://localhost:8000/api-gateway/update-cart-item-quantity", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken()
+                        },
+                        body: JSON.stringify({
+                            quantity: formData.get('quantity'),
+                            product_id: formData.get('product_id'),
+                            cart_id: getCartId()
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            const items = data.reduce((accumulator, currentValue) => {
+                                return accumulator + currentValue['quantity'];
+                            }, 0);
+
+                            // update the number of cart_items so it is reflected correctly on screen
+                            const cart_item_element = document.querySelector("#cart-items");
+                            cart_item_element.textContent = items;
+
+                            // also reset the quantity on the selected product back to 0
+                            const quantityFormInput = form.querySelector('input[name="quantity"]');
+                            quantityFormInput.value = 1;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        })
+                });
+            });
+
+            // add a listener on the scrollHeight property change so that the height is correctly
+            // calculated after the DOM has loaded.
+            const folderElements = document.getElementsByClassName("folder-content");
+            for (let folder of folderElements) {
+                const resizeObserver = new ResizeObserver(entries => {
+                    for (let entry of entries) {
+                        if (!folder.classList.contains('collapsed')) {
+                            // only set the height to the scroll height if the folder is NOT collapsed
+                            folder.style.height = folder.scrollHeight + 'px';
+                        }
+
+                    }
+                });
+                resizeObserver.observe(folder);
+            }
+        });
+
+
+        /**
+         * Expand/Collapse menu classifications
+         *
+         * @param sectionId
+         */
+        function toggleClassificationMenuSection(sectionId) {
+            const section = document.getElementById(sectionId + '-content');
+            const headerSection = document.getElementById(sectionId);
+            if (section.classList.contains('collapsed')) {
+                section.classList.remove('collapsed');
+                section.style.height = section.scrollHeight + 'px';
+                headerSection.style.width = '100%';
+            } else {
+                section.classList.add('collapsed');
+                section.style.height = '0px';
+                headerSection.style.width = '50%';
+            }
+        }
+
+    </script>
+{% endblock %}
+
+{% block window_title %}Menu{% endblock %}
+{% block title %}Menu{% endblock %}
+
+{% block content %}
+
+    <div class="page-title-message container">
+        <div class="row align-items-start">
+            <div class="col-12 col-md-6 article-first-paragraph">
+                <h3>Welcome to my menu of Sri Lankan Delicacies</h3>
+                <p class="fst-italic fs-5">Whether you are just trying Sri Lankan food for the first time, or a seasoned
+                    professional, I hope there will
+                    be something to get your taste-buds salivating. Enjoy!</p>
+                <br>
+            </div>
+            <div class="col-12 col-md-6">
+                <img class="image-frame" src="{% static 'images/family/lamprais_making.png' %}" alt="Making Lamprais">
+            </div>
+        </div>
+    </div>
+
+    <div class="row align-items-start">
+        <div class="col-12 col-md-6">
+            <img class="image-frame" src="{% static 'images/family/lamprais_rice_prep.png' %}" alt="Preparing Lamprais">
+        </div>
+        <div class="col-12 col-md-6">
+            <p>These items are cooked fresh upon receiving confirmation of your order so please add any special
+                requirements at the time of ordering!</p>
+            <p>Our chief cook can take up to 2-3 days to have your order ready. Please order in advance to secure your
+                curries on time!</p>
+        </div>
+    </div>
+
+    <div class="menu-classification">
+        {% for classification in classifications %}
+            <a href="#{{ classification.name }}"><h4>{{ classification.name }}</h4></a>
+        {% endfor %}
+    </div>
+
+    {% for classification in classifications %}
+        <div class="classification-item">
+
+            <div id="{{ classification.name }}"
+                 class="classification-name-label{% if classification.product_set.exists %} contains-menu-items{% endif %}"
+                 onclick="{% if classification.product_set.exists %}toggleClassificationMenuSection('{{ classification.name }}'){% endif %}">
+                <i class="fa fa-arrows-v"></i>
+                <h3>{{ classification.name }}</h3>
+            </div>
+
+            {#            <h5>{{ classification.description }}</h5>#}
+
+            <div id="{{ classification.name }}-content" class="folder-content">
+                <table class="product-table">
+                    {% for product in classification.product_set.all %}
+                        <tr class="product-item-row">
+                            <td>
+                                <form id="product-item-form-{{ product.id }}" method="post">
+                                    <div class="product-item">
+
+                                        <div class="product-item-header">
+
+                                            <h4>{{ product.name }}</h4>
+                                            <div class="warning-image-container">
+                                                {% if product.chilli_level > 0 %}
+                                                    {% for i in product.chilli_level|chilli_range %}
+                                                        <img class="warning-img level-{{ forloop.counter }}"
+                                                             src="{% static 'images/icons/chilli.png' %}"
+                                                             alt="Chilli" title="Chilli Level">
+                                                    {% endfor %}
+                                                    {% if product.contains_peanuts %}
+                                                        <img class="warning-img"
+                                                             src="{% static 'images/icons/peanut.png' %}"
+                                                             alt="Contains Peanuts" title="Contains Peanuts">
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <div class="product-details-container container">
+
+                                            <p>{{ product.description }}</p>
+
+                                            <div class="row">
+
+                                                <div class="col-12 col-md-6 mb-4">
+
+                                                    <img src="{% static 'images/menu/' %}{{ product.image }}"
+                                                         alt="Menu Item"
+                                                         class="product-img img-fluid"
+                                                         onclick="openModal(
+                                                                 '{% static 'images/menu/' %}{{ product.image }}',
+                                                                 '{{ product.name }}', '{{ product.description }}')"
+                                                         onerror="this.onerror=null; this.src='{% static 'images/no-image.png' %}'">
+                                                    {#                                            </a>#}
+
+                                                </div>
+
+                                                <div class="col-12 col-md-6 ps-5">
+                                                    <label class="product-price">${{ product.price|floatformat:2 }}</label>
+                                                    <div class="product-quantity">
+                                                        <label for="quantity">Quantity</label>
+
+                                                        <input id="quantity" type="number" name="quantity"
+                                                               value="1" class="form-control">
+                                                        <input type="hidden" name="product_id"
+                                                               value="{{ product.id }}">
+                                                        <button type="submit" class="action-button btn btn-primary">Add</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div id="imagePreviewModal" class="modal">
+        <div class="container pb-2">
+            <div class="close" onclick="closeModal()">&times;</div>
+            <h1 id="previewImageTitle"></h1>
+            <div id="previewImageContainer" class="preview-image-container">
+                {# src is populated via javascript#}
+                <img src="" class="modal-content" id="previewImage" alt="Image Preview">
+            </div>
+            <p id="previewImageDescription"></p>
+        </div>
+    </div>
+
+{% endblock %}
+

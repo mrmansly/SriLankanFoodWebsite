@@ -1,0 +1,45 @@
+{% extends 'main/base.html' %}
+
+{% block window_title %}Home{% endblock %}
+{% block title %}Home{% endblock %}
+{% load static %}
+{% block content %}
+
+    <div class="main-content-header-image">
+        <img src="{% static 'images/family/shelf3.png' %}" alt="Spice Shelf">
+    </div>
+
+    <div class="container">
+        <div class="row align-items-start">
+            <div class="col-12 col-md-6">
+                <img class="image-frame" src="{% static 'images/family/stove_top.png' %}" alt="Cooking Curries">
+            </div>
+            <div class="col-12 col-md-6 article-first-paragraph">
+                <h3>Welcome to your favourite Sri Lankan website for tasty treats!</h3>
+                <p class="fst-italic fs-5">My only job is to make your life easier.<br>
+                I'll provide the food, you go spend some time with your family!</p>
+                <p>Since I can remember I've lived in a house where Wednesday dinner and Sunday lunch was
+                    rice and curry time! Throughout the years
+                    I've watched my Mum make our favourite curries over and over again, and seen them devoured just as quickly.</p>
+                <p class="fst-italic fs-5">In those days I helped prepare the ingredients, cut the veggies, stirred the pot, and tasted the food.</p>
+                <p>Now I make the rice and curries for my family - some recipes from my Mum (well most of them actually),
+                    but also some others I've picked up along the way and have made it onto my list of favourites. It's
+                nice to know that my daughter, Lola, also enjoys cooking and eating curries just as much as I do.</p>
+                <p class="fst-italic fs-5">These days Lola helps prepare the ingredients, cut the veggies, stirs the pot, and tastes the food.</p>
+            </div>
+        </div>
+        <div class="row align-items-start">
+            <div class="col-12 col-md-6">
+                <p>Rice and curries in my house have always been made to share and enjoy with others. Each of my family have their own favourite curry,
+                but it wasn't a meal unless there were at least three or four other curries to go along with a heaped spoon of rice.</p>
+                <p>I welcome you to peruse through the <a href="{% url 'products' %}">menu</a> and take a look at the dishes
+                    that I've grown to enjoy cooking and enjoying with my family.</p>
+                <p>I hope if you have a fondness for Sri Lankan curries, or are willing to step out of your comfort zone and venture
+                    away from the Indian, Thai or Chinese meals that you'll find something here that you'll be able to share and enjoy with your family too!</p>
+            </div>
+            <div class="col-12 col-md-6">
+                <img class="image-frame" src="{% static 'images/family/sunday_lunches.png' %}" alt="Family Lunch">
+            </div>
+        </div>
+    </div>
+{% endblock %}

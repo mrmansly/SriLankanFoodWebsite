@@ -1,0 +1,45 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block window_title %}About Us{% endblock %}
+{% block title %}About Us{% endblock %}
+
+{% block content %}
+    <div class="main-content-header-image">
+        <img src="{% static 'images/family/shelf2.png' %}" alt="Spice Shelf">
+    </div>
+
+    <div class="container">
+        <div class="row align-items-start">
+            <div class="col-12 col-md-6 article-first-paragraph">
+                <h3>Trained as a software engineer, cooking was always a side passion of mine. It allowed me to relax
+                    after a hard days work and switch off from the constant buzz.</h3>
+                <p>When I was living abroad in New Zealand and Melbourne with my wife, Sharnell, I needed my regular fix of rice and curry which
+                    could rarely be satisfied through the usual takeout joints. It was during this time that my love of
+                    cooking home style Sri Lankan curries and rice really took off. If I couldn't buy my curry fix, I'd need to
+                    be the one doing the cooking!</p>
+                <p>We would regularly entertain our friends by inviting them over for rice and curry for birthday parties,
+                    dinner parties and the odd AFL Grand Final party! It was great to see my friends eating curries that I had
+                    grown up with, and seeing them coming back for seconds and thirds was very satisfying.</p>
+                    <p>Throughout these early phases of my cooking, there was of course the constant calls back home
+                to ask Mum how much of this ingredient I should put in, or when do you know something is ready, or why isn't
+                        this looking the same as yours? As time went on, the questions became less frequent, the curries
+                    became more consistent and on the odd occasion you get the ultimate feedback from your guests that it's "Restaurant Quality"!</p>
+            </div>
+            <div class="col-12 col-md-6">
+                <img class="image-frame" src="{% static 'images/family/rice_and_curry_night.png' %}" alt="Rice and Curry Night">
+            </div>
+        </div>
+        <div class="row align-items-start banner-row">
+            <div class="col-12 col-md-6">
+                <img class="image-frame" src="{% static 'images/family/lamprais_rice_prep.png' %}" alt="Lamprais Rice Ingredients">
+            </div>
+            <div class="col-12 col-md-6">
+                <p class="fst-italic fs-5">I want to bring home cooked Sri Lankan food that my family and friends have loved, to your
+                    home! </p>
+                <p>I want to spread that unique taste that Sri Lankan food has to offer to whet your appetite and get
+                    you so hooked on it that you can't go more than a week without getting your curry fix on!
+                    <p>BUT unlike me, you have the opportunity to buy your home cooked Sri Lankan curries rather than having to make it!</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

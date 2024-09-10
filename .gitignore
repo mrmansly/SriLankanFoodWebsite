@@ -1,0 +1,5 @@
+/venv/
+/staticfiles/
+/node_modules/
+/out/
+/db.sqlite3

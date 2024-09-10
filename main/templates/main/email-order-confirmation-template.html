@@ -1,0 +1,124 @@
+{% extends 'main/email_base_template.html' %}
+{% load custom_filters %}
+
+{% block body %}
+    <div>
+        <p>Hi {{ order.first_name }},</p>
+        <p>Please find below details of your confirmed order.</p>
+    </div>
+    <table>
+        <tr>
+            <td>Order #</td>
+            <td>{{ order.id }}</td>
+        </tr>
+        <tr>
+            <td>Order Placed</td>
+            <td>{{ order.created_date|date:"d F Y  H:i:s" }}</td>
+        </tr>
+        <tr>
+            <td>Order Name</td>
+            <td>{{ order.last_name }}</td>
+        </tr>
+        <tr>
+            <td>Mobile</td>
+            <td>
+                {% if order.mobile is not None %}
+                    {{ order.mobile }}
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td>Home Phone</td>
+            <td>
+                {% if order.home_phone is not None %}
+                    {{ order.home_phone }}
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <div style="margin-top: 100px">
+        <table style="width: 600px; border-collapse: collapse;">
+            <thead>
+            <tr style="justify-content: start">
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;" scope="col">#</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;" scope="col">Product Name</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;" scope="col">Quantity</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;" scope="col">Unit Price</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;" scope="col">Price</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for item in item_list %}
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;"
+                        scope="row">{{ forloop.counter }}</th>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: left">{{ item.product.name }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{ item.quantity }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                        ${{ item.product.price|floatformat:2 }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                        ${{ item.quantity|multiply:item.product.price }}</td>
+                </tr>
+            {% endfor %}
+
+            <tr>
+                <th scope="row"></th>
+                <td></td>
+                <td></td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align:right; border-top-style: double">Sub Total
+                </td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align:right; border-top-style: double">
+                    ${{ price_data.net_cost|floatformat:2 }}</td>
+            </tr>
+
+            {% if price_data.discount > 0 %}
+                <tr>
+                    <th scope="row"></th>
+                    <td></td>
+                    <td></td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align:right">Discount</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align:right">-
+                        ${{ price_data.discount|floatformat:2 }}</td>
+                </tr>
+
+                <tr>
+                    <th scope="row"></th>
+                    <td></td>
+                    <td></td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align:right; border-top-style: double">Revised
+                        Sub
+                        Total
+                    </td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align:right; border-top-style: double">
+                        ${{ price_data.revised_net_cost|floatformat:2 }}</td>
+                </tr>
+            {% endif %}
+
+
+            <tr>
+                <th scope="row"></th>
+                <td></td>
+                <td></td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align:right">GST (10%)</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align:right">
+                    ${{ price_data.gst|floatformat:2 }}</td>
+            </tr>
+
+            <tr>
+                <th scope="row"></th>
+                <td></td>
+                <td></td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align:right;font-weight: bold; border-top-style: double; border-bottom-style: double">
+                    Total
+                </td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align:right;font-weight: bold; border-top-style: double; border-bottom-style: double">
+                    ${{ price_data.total_price|floatformat:2 }}</td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

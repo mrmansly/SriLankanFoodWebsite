@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+
+{% block window_title %}Order Confirmed{% endblock %}
+{% block title %}Order Confirmed{% endblock %}
+
+{% block content %}
+
+        <div class="page-title-message">
+              Order# <b>{{ order_id }}</b>
+            Received <p>{{ order_date|date:"d F Y  H:i:s" }}</p>
+            <p>Thank you for confirming your order. We will be in contact via your checkout details to discuss
+                payment and delivery.</p>
+        </div>
+
+        {% include 'main/order-details.html' %}
+
+{% endblock %}
