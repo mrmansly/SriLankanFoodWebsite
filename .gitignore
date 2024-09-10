@@ -3,3 +3,11 @@
 /node_modules/
 /out/
 /db.sqlite3
+/.idea/misc.xml
+/.idea/vcs.xml
+/foodWebsite.iml
+/foodWebsite/__pycache__/
+/main/__pycache__/
+/main/migrations/__pycache__/
+/main/services/__pycache__/
+/main/templatetags/__pycache__/
