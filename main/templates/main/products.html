@@ -49,7 +49,7 @@
                     const formData = new FormData(event.target);
                     event.preventDefault();
 
-                    fetch("http://localhost:8000/api-gateway/update-cart-item-quantity", {
+                    fetch("/api-gateway/update-cart-item-quantity", {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
