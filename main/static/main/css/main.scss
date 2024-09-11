@@ -609,14 +609,10 @@ $lankan-light-blue: #0000C8;
 
 
 .image-frame {
-    //width: 100%;
+    width: 80%;
     border: 2px solid $lankan-dark-blue;
     border-radius: 15px;
     margin-bottom: 1rem;
-}
-
-.medium-image {
-  max-height: 300px;
 }
 
 .folder-content {

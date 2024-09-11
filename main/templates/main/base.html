@@ -61,7 +61,7 @@
     {% if cart_items > 0 %}
         <div class="checkout row">
             <div class="col col-12 col-md-6 text-center">
-                <a href="/checkout/">
+                <a href="{% url 'checkout' %}">
                     <img src="{% static 'images/rice_cooker.png' %}" alt="Checkout">
                 </a>
             </div>
@@ -76,12 +76,12 @@
 <div class="main-container">
 
     <div id="sidenav" class="sidebar">
-        <a href="/">Home</a>
-        <a href="/products/">Menu</a>
-        <a href="/order/">Order</a>
-        <a href="/about/">About</a>
-        <a href="/faq/">FAQ</a>
-        <a href="/contact/">Contact</a>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'products' %}">Menu</a>
+        <a href="{% url 'order' %}">Order</a>
+        <a href="{% url 'about' %}">About</a>
+        <a href="{% url 'faq' %}">FAQ</a>
+        <a href="{% url 'contact' %}">Contact</a>
     </div>
 
     <main class="main-content" id="content">
@@ -98,12 +98,12 @@
 
 <footer class="container-fluid footer">
     <div>
-        <a href="/">Home</a>
-        <a href="/products/">Menu</a>
-        <a href="/order/">Order</a>
-        <a href="/about/">About</a>
-        <a href="/faq/">FAQ</a>
-        <a href="/contact/">Contact</a>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'products' %}">Menu</a>
+        <a href="{% url 'order' %}">Order</a>
+        <a href="{% url 'about' %}">About</a>
+        <a href="{% url 'faq' %}">FAQ</a>
+        <a href="{% url 'contact' %}">Contact</a>
     </div>
 </footer>
 
