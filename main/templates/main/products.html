@@ -67,9 +67,9 @@
                                 return accumulator + currentValue['quantity'];
                             }, 0);
 
-                            // update the number of cart_items so it is reflected correctly on screen
-                            const cart_item_element = document.querySelector("#cart-items");
-                            cart_item_element.textContent = items;
+                            updateCartItems(items);
+                            toggleCartItemVisibility(items > 0);
+
 
                             // also reset the quantity on the selected product back to 0
                             const quantityFormInput = form.querySelector('input[name="quantity"]');

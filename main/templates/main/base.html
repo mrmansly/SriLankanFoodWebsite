@@ -32,6 +32,31 @@
     {# This does have the problem that when loading up a page  #}
 
     <script type="text/javascript">
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const cartItemElement = document.getElementById("cart-items");
+            if (cartItemElement.textContent === '' || cartItemElement.textContent === '0') {
+                toggleCartItemVisibility(false);
+            } else {
+                toggleCartItemVisibility(true);
+            }
+        });
+
+        function updateCartItems(items) {
+            const cartItemElement = document.getElementById("cart-items");
+            cartItemElement.textContent = items;
+            toggleCartItemVisibility(items > 0);
+        }
+
+        function toggleCartItemVisibility(containsItems) {
+            const cartItemCheckout = document.getElementById("cart-item-checkout")
+            if (containsItems && cartItemCheckout.style.display === 'none') {
+                cartItemCheckout.style.display = 'flex';
+            } else if (!containsItems && (cartItemCheckout.style.display === '' || cartItemCheckout.style.display === 'flex')) {
+                cartItemCheckout.style.display = 'none';
+            }
+        }
+
         function toggleMenu() {
             const sideNavElement = document.getElementById("sidenav");
             if (sideNavElement.style.display === 'none') {
@@ -58,8 +83,8 @@
         <h1 class="title">Sri Lankan Culinary Delights</h1>
     </div>
 
-    {% if cart_items > 0 %}
-        <div class="checkout row">
+{#    {% if cart_items > 0 %}#}
+        <div id="cart-item-checkout" class="checkout row">
             <div class="col col-12 col-md-6 text-center">
                 <a href="{% url 'checkout' %}">
                     <img src="{% static 'images/rice_cooker.png' %}" alt="Checkout">
@@ -69,7 +94,7 @@
                 <span id="cart-items">{{ cart_items }}</span><span class="items-label">&nbsp;Items</span>
             </div>
         </div>
-    {% endif %}
+{#    {% endif %}#}
 
 </header>
 
