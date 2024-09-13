@@ -320,10 +320,7 @@ html, body {
 
 .sidebar {
   display: flex;
-  //background-color: $lankan-dark-blue;
   background: linear-gradient($lankan-dark-blue, $lankan-light-blue, $lankan-dark-blue);
-  //background-image: url("main/images/sri_lanka_flag.png");
-  //background-size: contain;
   padding-top: 50px;
   flex-direction: column;
   width: 160px;
@@ -594,8 +591,6 @@ html, body {
 
 .main-content-header-image {
   @extend .container;
-  //background-image: url("main/images/family/lamprais_rice_prep.png");
-  //opacity: 0.3;
   padding-left: 0;
   padding-right: 0;
   margin-bottom: 1rem;
