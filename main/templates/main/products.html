@@ -5,7 +5,6 @@
 
 {% block head_content %}
 
-    <script src="{% static 'main/' %}"></script>
     <script type="text/javascript">
 
         function getCSRFToken() {
@@ -16,69 +15,8 @@
             return document.querySelector('meta[name="cart_id"]').getAttribute('content');
         }
 
-        function openModal(imageSrc, title, description) {
-            const modal = document.getElementById("imagePreviewModal");
-            const modalImg = document.getElementById("previewImage");
-            const modalTitle = document.getElementById("previewImageTitle");
-            const modalDescription = document.getElementById("previewImageDescription");
-
-            modal.style.display = "block";
-            modalImg.src = imageSrc;
-            modalTitle.textContent = title;
-            modalDescription.textContent = description;
-        }
-
-        function closeModal() {
-            const modal = document.getElementById("imagePreviewModal");
-            modal.style.display = "none";
-        }
-
-        window.onclick = function (event) {
-            const modal = document.getElementById("imagePreviewModal");
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        }
 
         document.addEventListener("DOMContentLoaded", function () {
-
-            document.querySelectorAll('form').forEach(form => {
-                form.addEventListener("submit", (event) => {
-
-                    const formData = new FormData(event.target);
-                    event.preventDefault();
-
-                    fetch("/api-gateway/update-cart-item-quantity", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCSRFToken()
-                        },
-                        body: JSON.stringify({
-                            quantity: formData.get('quantity'),
-                            product_id: formData.get('product_id'),
-                            cart_id: getCartId()
-                        })
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            const items = data.reduce((accumulator, currentValue) => {
-                                return accumulator + currentValue['quantity'];
-                            }, 0);
-
-                            updateCartItems(items);
-                            toggleCartItemVisibility(items > 0);
-
-
-                            // also reset the quantity on the selected product back to 0
-                            const quantityFormInput = form.querySelector('input[name="quantity"]');
-                            quantityFormInput.value = 1;
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                        })
-                });
-            });
 
             // add a listener on the scrollHeight property change so that the height is correctly
             // calculated after the DOM has loaded.
@@ -159,88 +97,17 @@
                 <h3>{{ classification.name }}</h3>
             </div>
 
-            {#            <h5>{{ classification.description }}</h5>#}
-
             <div id="{{ classification.name }}-content" class="folder-content">
                 <table class="product-table">
                     {% for product in classification.product_set.all %}
-                        <tr class="product-item-row">
-                            <td>
-                                <form id="product-item-form-{{ product.id }}" method="post">
-                                    <div class="product-item">
-
-                                        <div class="product-item-header">
-
-                                            <h4>{{ product.name }}</h4>
-                                            <div class="ingredients-warning-container">
-                                                {% if product.chilli_level > 0 %}
-                                                    {% for i in product.chilli_level|chilli_range %}
-                                                        <img class="warning-img level-{{ forloop.counter }}"
-                                                             src="{% static 'images/icons/chilli.png' %}"
-                                                             alt="Chilli" title="Chilli Level">
-                                                    {% endfor %}
-                                                    {% if product.contains_peanuts %}
-                                                        <img class="warning-img"
-                                                             src="{% static 'images/icons/peanut.png' %}"
-                                                             alt="Contains Peanuts" title="Contains Peanuts">
-                                                    {% endif %}
-                                                {% endif %}
-                                            </div>
-                                        </div>
-
-                                        <div class="product-details-container container">
-
-                                            <p>{{ product.description }}</p>
-
-                                            <div class="row">
-
-                                                <div class="col-12 col-md-6 mb-4">
-
-                                                    <img src="{% static 'images/menu/' %}{{ product.image }}"
-                                                         alt="Menu Item"
-                                                         class="product-img img-fluid"
-                                                         onclick="openModal(
-                                                                 '{% static 'images/menu/' %}{{ product.image }}',
-                                                                 '{{ product.name }}', '{{ product.description }}')"
-                                                         onerror="this.onerror=null; this.src='{% static 'images/no-image.png' %}'">
-
-                                                </div>
-
-                                                <div class="col-12 col-md-6">
-                                                    <label class="product-price">${{ product.price|floatformat:2 }}</label>
-                                                    <div class="product-quantity">
-                                                        <label for="quantity">Quantity</label>
-
-                                                        <input id="quantity" type="number" name="quantity"
-                                                               value="1" class="form-control">
-                                                        <input type="hidden" name="product_id"
-                                                               value="{{ product.id }}">
-                                                        <button type="submit" class="action-button btn btn-primary">Add</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                            </td>
-                        </tr>
+                        {% include 'main/component/product-item-row.html' with product=product %}
                     {% endfor %}
                 </table>
             </div>
         </div>
     {% endfor %}
 
-    <div id="imagePreviewModal" class="modal">
-        <div class="container pb-2">
-            <div class="close" onclick="closeModal()">&times;</div>
-            <h1 id="previewImageTitle"></h1>
-            <div id="previewImageContainer" class="preview-image-container">
-                {# src is populated via javascript#}
-                <img src="" class="modal-content" id="previewImage" alt="Image Preview">
-            </div>
-            <p id="previewImageDescription"></p>
-        </div>
-    </div>
+    {% include 'main/component/image-preview-modal.html' %}
 
 {% endblock %}
 

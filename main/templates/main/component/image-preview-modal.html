@@ -1,0 +1,26 @@
+{% load static %}
+
+<script src="{% static 'js/modal-utils.js' %}"></script>
+
+<script type="text/javascript">
+
+    window.onclick = function (event) {
+        const modal = document.getElementById("imagePreviewModal");
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+
+</script>
+
+<div id="imagePreviewModal" class="modal">
+    <div class="container pb-2">
+        <div class="close" onclick="closeModal()">&times;</div>
+        <h1 id="previewImageTitle"></h1>
+        <div id="previewImageContainer" class="preview-image-container">
+            {# src is populated via javascript in modal-utils openModal method from the calling window #}
+            <img src="" class="modal-content" id="previewImage" alt="Image Preview">
+        </div>
+        <p id="previewImageDescription"></p>
+    </div>
+</div>

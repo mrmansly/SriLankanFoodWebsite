@@ -1,0 +1,100 @@
+{% load static %}
+{% load custom_filters %}
+
+<script src="{% static 'js/modal-utils.js' %}"></script>
+<script src="{% static 'js/api-utils.js' %}"></script>
+
+<script type="text/javascript">
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const formElement = document.getElementById('product-item-form-{{ product.id }}');
+
+        formElement.addEventListener("submit", (event) => {
+
+            const formData = new FormData(event.target);
+            event.preventDefault();
+
+            updateCartItemQuantity(getCartId(), formData.get('quantity'), formData.get('product_id'), getCSRFToken())
+                .then(data => {
+                    const items = data.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue['quantity'];
+                    }, 0);
+
+                    updateCartItems(items);
+                    toggleCartItemVisibility(items > 0);
+
+
+                    // also reset the quantity on the selected product back to 0
+                    const quantityFormInput = formElement.querySelector('input[name="quantity"]');
+                    quantityFormInput.value = 1;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                })
+        });
+    });
+
+</script>
+<tr class="product-item-row">
+    <td>
+        <form id="product-item-form-{{ product.id }}" method="post">
+            <div class="product-item">
+
+                <div class="product-item-header">
+
+                    <h4>{{ product.name }}</h4>
+                    <div class="ingredients-warning-container">
+                        {% if product.chilli_level > 0 %}
+                            {% for i in product.chilli_level|chilli_range %}
+                                <img class="warning-img level-{{ forloop.counter }}"
+                                     src="{% static 'images/icons/chilli.png' %}"
+                                     alt="Chilli" title="Chilli Level">
+                            {% endfor %}
+                            {% if product.contains_peanuts %}
+                                <img class="warning-img"
+                                     src="{% static 'images/icons/peanut.png' %}"
+                                     alt="Contains Peanuts" title="Contains Peanuts">
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="product-details-container container">
+
+                    <p>{{ product.description }}</p>
+
+                    <div class="row">
+
+                        <div class="col-12 col-md-6 mb-4">
+
+                            {% with '/images/menu/'|add:product.image as product_image %}
+                                <img src="{% static product_image %}"
+                                     alt="Menu Item"
+                                     class="product-img img-fluid"
+                                     onclick="openModal(
+                                             '{% static product_image %}',
+                                             '{{ product.name }}', '{{ product.description }}')"
+                                     onerror="this.onerror=null; this.src='{% static 'images/no-image.png' %}'">
+                            {% endwith %}
+
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="product-price">${{ product.price|floatformat:2 }}</label>
+                            <div class="product-quantity">
+                                <label for="quantity">Quantity</label>
+
+                                <input id="quantity" type="number" name="quantity"
+                                       value="1" class="form-control">
+                                <input type="hidden" name="product_id"
+                                       value="{{ product.id }}">
+                                <button type="submit" class="action-button btn btn-primary">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </td>
+</tr>
