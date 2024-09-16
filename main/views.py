@@ -192,7 +192,8 @@ def render_product_page(request):
     # go back to the products page
     return render(request, 'main/products.html', {
         'products': product_list,
-        'classifications': classifications
+        'classifications': classifications,
+        'cartItems': get_cart(get_session_id(request)).cartitem_set.all()
     })
 
 
@@ -213,12 +214,12 @@ def contact_submitted_view(request, contact_type):
 @api_view(['POST'])
 # May need to consider CORS for handling this in other environments??
 def api_gateway_view(request, api_path):
-    print(api_path)
     if api_path == 'update-cart-item-quantity':
         request_body = request.data
         add_product(int(request_body['cart_id']),
                     int(request_body['product_id']),
-                    int(request_body['quantity']))
+                    int(request_body['quantity']),
+                    request_body['instructions'])
 
         cart_items = get_cart_items(int(request_body['cart_id']))
         cart_item_serializer = CartItemSerializer(cart_items, many=True)

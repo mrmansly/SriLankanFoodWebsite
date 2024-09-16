@@ -7,15 +7,24 @@
 <script type="text/javascript">
 
     document.addEventListener("DOMContentLoaded", function () {
+        addListenerForFormSubmit({{ product.id }});
+    });
 
-        const formElement = document.getElementById('product-item-form-{{ product.id }}');
+    function addListenerForFormSubmit(product_id) {
+        const formElement = document.getElementById('product-item-form-'+product_id);
 
         formElement.addEventListener("submit", (event) => {
 
             const formData = new FormData(event.target);
             event.preventDefault();
 
-            updateCartItemQuantity(getCartId(), formData.get('quantity'), formData.get('product_id'), getCSRFToken())
+            updateCartItemQuantity(
+                getCartId(),
+                formData.get('quantity'),
+                formData.get('product_id'),
+                formData.get('instructions'),
+                getCSRFToken()
+            )
                 .then(data => {
                     const items = data.reduce((accumulator, currentValue) => {
                         return accumulator + currentValue['quantity'];
@@ -23,22 +32,18 @@
 
                     updateCartItems(items);
                     toggleCartItemVisibility(items > 0);
-
-
-                    // also reset the quantity on the selected product back to 0
-                    const quantityFormInput = formElement.querySelector('input[name="quantity"]');
-                    quantityFormInput.value = 1;
                 })
                 .catch(error => {
                     console.error('Error:', error);
                 })
         });
-    });
+    }
 
 </script>
 <tr class="product-item-row">
     <td>
         <form id="product-item-form-{{ product.id }}" method="post">
+            {% csrf_token %}
             <div class="product-item">
 
                 <div class="product-item-header">
@@ -85,11 +90,18 @@
                             <div class="product-quantity">
                                 <label for="quantity">Quantity</label>
 
+                                <button>-</button>
                                 <input id="quantity" type="number" name="quantity"
-                                       value="1" class="form-control">
+                                       class="form-control" value="{{ product.id|use_cart_item_quantity:cart }}">
+                                <button>+</button>
+
                                 <input type="hidden" name="product_id"
                                        value="{{ product.id }}">
                                 <button type="submit" class="action-button btn btn-primary">Add</button>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <label for="instructions" class="align-top">Special Instructions</label>
+                                <textarea class="w-100" id="instructions" name="instructions"></textarea>
                             </div>
                         </div>
                     </div>

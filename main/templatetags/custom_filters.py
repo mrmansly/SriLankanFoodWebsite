@@ -21,3 +21,14 @@ def chilli_range(value):
 def filter_by_category(queryset, category):
     return queryset.filter(category=category)
 
+
+@register.filter
+def use_cart_item_quantity(product_id, args):
+    cart = args
+    cart_items = cart.cartitem_set.filter(product_id=product_id)
+    quantity = 0
+
+    for cart_item in cart_items:
+        quantity += cart_item.quantity
+
+    return quantity

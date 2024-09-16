@@ -8,13 +8,13 @@ Order Placed: {{ order.created_date|date:"d F Y  H:i:s" }}
 Order Name: {{ order.last_name }}
 Mobile: {% if order.mobile is not None %}{{ order.mobile }}{% endif %}
 Home Phone: {% if order.home_phone is not None %}{{ order.home_phone }}{% endif %}
-{% for item in item_list %}
-Item: {{item.product.name}}
+-------------------------------------------------------------------------------------{% for item in item_list %}
+Item: {{item.product.name}}{% if item.instructions is not None %}
+Special Instructions: {{item.instructions}}{% endif %}
 Quantity: {{item.quantity}}
 Unit Price: ${{item.product.price|floatformat:2}}
-Price: ${{item.quantity|multiply:item.product.price}}
-{% endfor %}
-
+Price: ${{item.quantity|multiply:item.product.price}}{% endfor %}
+-------------------------------------------------------------------------------------
 Sub Total: ${{ price_data.net_cost|floatformat:2 }}{% if price_data.discount > 0 %}
 Discount: - ${{ price_data.discount|floatformat:2 }}
 Revised Sub Total: ${{ price_data.revised_net_cost|floatformat:2 }}{% endif %}

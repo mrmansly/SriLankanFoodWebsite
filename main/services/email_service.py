@@ -11,6 +11,7 @@ def send_email(to_email, subject, html_content, plain_content):
         from_email=from_email,
         to=[to_email]
     )
+
     email.attach_alternative(html_content, "text/html")
 
     try:

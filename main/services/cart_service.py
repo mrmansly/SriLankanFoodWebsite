@@ -9,7 +9,7 @@ def get_cart(session_id, user_id=None):
     return found_cart
 
 
-def add_product(cart_id, product_id, quantity: int):
+def add_product(cart_id, product_id, quantity: int, instructions):
 
     cart = Cart.objects.get(id=cart_id)
 
@@ -24,17 +24,19 @@ def add_product(cart_id, product_id, quantity: int):
         raise ValueError("The quantity is not defined.")
     elif quantity != 0:
         cart_item, created = cart.cartitem_set.get_or_create(product=product,
-                                                             defaults={'quantity': quantity})
+                                                             defaults={'quantity': quantity,
+                                                                       'instructions': instructions})
 
         if not created:
             cart_item.quantity += quantity
             if cart_item.quantity < 0:
                 cart_item.delete()
             else:
+                cart_item.instructions = instructions
                 cart_item.save()
 
 
-def update_quantity(cart_id, product_id, quantity: int):
+def update_quantity(cart_id, product_id, quantity: int, instructions):
 
     cart = Cart.objects.get(id=cart_id)
 
@@ -55,9 +57,11 @@ def update_quantity(cart_id, product_id, quantity: int):
             cart_item.delete()
     elif quantity > 0:
         cart_item, created = cart.cartitem_set.get_or_create(product=product,
-                                                             defaults={'quantity': quantity})
+                                                             defaults={'quantity': quantity,
+                                                                       'instructions': instructions})
         if not created:
             cart_item.quantity = quantity
+            cart_item.instructions = instructions
             cart_item.save()
 
 

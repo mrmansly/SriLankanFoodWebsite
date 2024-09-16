@@ -176,6 +176,11 @@ html, body {
   padding-top: 10px;
 }
 
+.instructions {
+  font-size: small;
+  padding-left: 1rem;
+}
+
 .product-item {
   padding: 1rem;
   border: 2px solid $lankan-dark-blue;
@@ -252,9 +257,6 @@ html, body {
     align-items: center;
   }
 
-  > input {
-    width: 70px;
-  }
 }
 
 .sidebar {
@@ -527,4 +529,16 @@ html, body {
   height: 0;
   overflow: hidden;
   transition: height 0.5s ease;
+}
+
+/* Hide spinner arrows for number input on WebKit browsers (Chrome, Safari) */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide spinner arrows for Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }

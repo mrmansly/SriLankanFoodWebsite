@@ -54,7 +54,16 @@
                 <tr>
                     <th style="border: 1px solid #ddd; padding: 8px; text-align: left;"
                         scope="row">{{ forloop.counter }}</th>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: left">{{ item.product.name }}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: left">
+                        <div>
+                            {{ item.product.name }}
+                        </div>
+                        {% if item.instructions is not None %}
+                            <div style="font-size: 13px">
+                                &nbsp;&nbsp;* {{ item.instructions }}
+                            </div>
+                        {% endif %}
+                    </td>
                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">{{ item.quantity }}</td>
                     <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
                         ${{ item.product.price|floatformat:2 }}</td>

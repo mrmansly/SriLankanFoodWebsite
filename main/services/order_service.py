@@ -9,7 +9,10 @@ def create_order(order, cart):
     order.save()
 
     for cart_item in cart.cartitem_set.all():
-        order_item = OrderProduct(product=cart_item.product,order=order,quantity=cart_item.quantity)
+        order_item = OrderProduct(product=cart_item.product,
+                                  order=order,
+                                  quantity=cart_item.quantity,
+                                  instructions=cart_item.instructions)
         order_item.save()
 
     # remove the cart after it has been converted to an order

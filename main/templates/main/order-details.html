@@ -21,7 +21,16 @@
         {% for item in item_list %}
             <tr class="align-middle">
                 <th scope="row">{{ forloop.counter }}</th>
-                <td>{{ item.product.name }}</td>
+                <td>
+                    <div>
+                        {{ item.product.name }}
+                    </div>
+                    {% if item.instructions is not None %}
+                        <div class="instructions">
+                            {{ item.instructions }}
+                        </div>
+                    {% endif %}
+                </td>
                 <td>
                     <form method="post" action="#">
                         {% csrf_token %}

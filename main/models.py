@@ -55,7 +55,7 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
-    instructions = models.CharField(max_length=255, null=True)
+    instructions = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return f"{self.quantity} item(s) of {self.product.name} exist in Cart {self.cart.id}"
