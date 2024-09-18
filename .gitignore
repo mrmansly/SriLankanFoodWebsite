@@ -1,8 +1,10 @@
 /venv/
+/myenv/
+nohup.out
 /staticfiles/
 /node_modules/
 /out/
-/db.sqlite3
+db.sqlite3
 /.idea/misc.xml
 /.idea/vcs.xml
 /foodWebsite.iml
