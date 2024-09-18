@@ -5,36 +5,22 @@
 
 {% block head_content %}
 
-    <script type="text/javascript">
+    <script type="module">
 
-        function getCSRFToken() {
-            return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        }
-
-        function getCartId() {
-            return document.querySelector('meta[name="cart_id"]').getAttribute('content');
-        }
-
-
-        document.addEventListener("DOMContentLoaded", function () {
-
-            // add a listener on the scrollHeight property change so that the height is correctly
-            // calculated after the DOM has loaded.
-            const folderElements = document.getElementsByClassName("folder-content");
-            for (let folder of folderElements) {
-                const resizeObserver = new ResizeObserver(entries => {
-                    for (let entry of entries) {
-                        if (!folder.classList.contains('collapsed')) {
-                            // only set the height to the scroll height if the folder is NOT collapsed
-                            folder.style.height = folder.scrollHeight + 'px';
-                        }
-
+        // add a listener on the scrollHeight property change so that the height is correctly
+        // calculated after the DOM has loaded.
+        const folderElements = document.getElementsByClassName("folder-content");
+        for (let folder of folderElements) {
+            const resizeObserver = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    if (!folder.classList.contains('collapsed')) {
+                        // only set the height to the scroll height if the folder is NOT collapsed
+                        folder.style.height = folder.scrollHeight + 'px';
                     }
-                });
-                resizeObserver.observe(folder);
-            }
-        });
-
+                }
+            });
+            resizeObserver.observe(folder);
+        }
 
         /**
          * Expand/Collapse menu classifications
@@ -56,6 +42,7 @@
         }
 
     </script>
+
 {% endblock %}
 
 {% block window_title %}Menu{% endblock %}

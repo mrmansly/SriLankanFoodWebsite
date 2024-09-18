@@ -22,21 +22,27 @@ def add_product(cart_id, product_id, quantity: int, instructions):
         raise ValueError("The product is undefined with id:" + product_id)
     elif quantity is None:
         raise ValueError("The quantity is not defined.")
-    elif quantity != 0:
-        cart_item, created = cart.cartitem_set.get_or_create(product=product,
+    elif quantity > 0:
+        cart_item, created = cart.cart_items.get_or_create(product=product,
                                                              defaults={'quantity': quantity,
                                                                        'instructions': instructions})
 
         if not created:
-            cart_item.quantity += quantity
-            if cart_item.quantity < 0:
-                cart_item.delete()
-            else:
-                cart_item.instructions = instructions
-                cart_item.save()
+            cart_item.quantity = quantity
+            cart_item.instructions = instructions
+            cart_item.save()
+    else:
+
+        # Cater for the scenario where a -ve quantity is passed through from the client and no cart item
+        # matching that product is found.
+        cart_items = cart.cart_items.filter(product=product)
+
+        if cart_items.count() == 1:
+            cart_items[0].delete()
 
 
-def update_quantity(cart_id, product_id, quantity: int, instructions):
+# instructions - if "None" passed in then keep existing instructions
+def update_cart_details(cart_id, product_id, quantity: int, instructions):
 
     cart = Cart.objects.get(id=cart_id)
 
@@ -51,20 +57,27 @@ def update_quantity(cart_id, product_id, quantity: int, instructions):
         raise ValueError("The product is undefined with id:" + product_id)
     elif quantity == 0:
         # remove item out of cart
-        cart_item = cart.cartitem_set.get(product=product)
+        cart_item = cart.cart_items.get(product=product)
 
         if cart_item is not None:
             cart_item.delete()
     elif quantity > 0:
-        cart_item, created = cart.cartitem_set.get_or_create(product=product,
-                                                             defaults={'quantity': quantity,
-                                                                       'instructions': instructions})
+
+        defaults = {'quantity': quantity}
+
+        if instructions is not None:
+            defaults['instructions'] = instructions
+
+        cart_item, created = cart.cart_items.get_or_create(product=product,
+                                                             defaults=defaults)
         if not created:
             cart_item.quantity = quantity
-            cart_item.instructions = instructions
+            if instructions is not None:
+                cart_item.instructions = instructions
+
             cart_item.save()
 
 
 def get_cart_items(cart_id):
     cart = Cart.objects.get(id=cart_id)
-    return cart.cartitem_set.all()
+    return cart.cart_items.all()

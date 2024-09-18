@@ -1,45 +1,32 @@
 {% load static %}
 {% load custom_filters %}
 
-<script src="{% static 'js/modal-utils.js' %}"></script>
-<script src="{% static 'js/api-utils.js' %}"></script>
+<script type="module">
 
-<script type="text/javascript">
+    import {
+        addListenerForFormSubmit,
+        incrementQuantityHandler,
+        decrementQuantityHandler
+    } from '../../../static/main/js/product-item-row-utils.js';
+    import {addClickListener} from '../../../static/main/js/form-utils.js';
 
-    document.addEventListener("DOMContentLoaded", function () {
-        addListenerForFormSubmit({{ product.id }});
-    });
+    function addListenersForQuantity(productId) {
+        const form = document.getElementById('product-item-form-' + productId);
+        addClickListener(form, productId, "add-quantity", incrementQuantityHandler);
+        addClickListener(form, productId, "minus-quantity", decrementQuantityHandler);
+    }
 
-    function addListenerForFormSubmit(product_id) {
-        const formElement = document.getElementById('product-item-form-'+product_id);
+    addListenerForFormSubmit({{ product.id }});
+    addListenersForQuantity({{ product.id }})
 
-        formElement.addEventListener("submit", (event) => {
-
-            const formData = new FormData(event.target);
-            event.preventDefault();
-
-            updateCartItemQuantity(
-                getCartId(),
-                formData.get('quantity'),
-                formData.get('product_id'),
-                formData.get('instructions'),
-                getCSRFToken()
-            )
-                .then(data => {
-                    const items = data.reduce((accumulator, currentValue) => {
-                        return accumulator + currentValue['quantity'];
-                    }, 0);
-
-                    updateCartItems(items);
-                    toggleCartItemVisibility(items > 0);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                })
-        });
+    const form = document.getElementById('product-item-form-' + {{ product.id }});
+    if (Number(form['quantity'].value) === 0) {
+        const minusQuantityElement = form.getElementsByClassName('minus-icon')[0];
+        minusQuantityElement.classList.add('quantity-button-disabled');
     }
 
 </script>
+
 <tr class="product-item-row">
     <td>
         <form id="product-item-form-{{ product.id }}" method="post">
@@ -90,18 +77,20 @@
                             <div class="product-quantity">
                                 <label for="quantity">Quantity</label>
 
-                                <button>-</button>
-                                <input id="quantity" type="number" name="quantity"
+                                <input id="quantity" type="number" name="quantity" min="0"
                                        class="form-control" value="{{ product.id|use_cart_item_quantity:cart }}">
-                                <button>+</button>
+
+                                <i class="clickable-icon minus-quantity minus-icon fa-solid fa-circle-minus fs-5"></i>
+                                <i class="clickable-icon add-quantity add-icon fa-solid fa-circle-plus fs-5"></i>
 
                                 <input type="hidden" name="product_id"
                                        value="{{ product.id }}">
-                                <button type="submit" class="action-button btn btn-primary">Add</button>
+                                <button type="submit" class="action-button btn btn-primary">Update</button>
                             </div>
                             <div class="col-12 mt-2">
                                 <label for="instructions" class="align-top">Special Instructions</label>
-                                <textarea class="w-100" id="instructions" name="instructions"></textarea>
+                                <textarea class="w-100" id="instructions"
+                                          name="instructions">{{ product.id|use_cart_item_instructions:cart }}</textarea>
                             </div>
                         </div>
                     </div>

@@ -1,22 +1,16 @@
 from django.shortcuts import render, redirect
-from django.forms.models import model_to_dict
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseServerError
-from .models import Cart, Contact, Order, Faq, FaqCategory, OrderProduct, Product, Classification
+from django.http import HttpResponse, JsonResponse
+from .models import Cart, Contact, Order, Faq, FaqCategory, Product, Classification
 from .forms import CheckoutForm, ContactForm
 from datetime import datetime
-import json
-from .services.cart_service import get_cart, add_product, update_quantity, get_cart_items
+from .services.cart_service import get_cart, add_product, update_cart_details
 from .services.order_service import create_order
 from .services.price_service import get_total_price, get_all_price_data
 from .services.contact_service import save_contact
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import CartSerializer, CartItemSerializer, ContactSerializer
-from .exceptions import ValidationException
-
-
-# Create your views here.
+from .serializers import CartSerializer, ContactSerializer
 
 
 def index_view(response):
@@ -48,7 +42,7 @@ def checkout_view(response):
                 order.created_date = datetime.now()
 
                 cart = get_cart(get_session_id(response))
-                order.total_price = get_total_price(cart.cartitem_set.all())
+                order.total_price = get_total_price(cart.cart_items.all())
 
                 order = create_order(order, cart)
                 item_list = order.orderproduct_set.all()
@@ -70,9 +64,9 @@ def checkout_view(response):
             session_id = get_session_id(response)
             cart = get_cart(session_id)
 
-            update_quantity(cart.id, product_id, quantity)
+            update_cart_details(cart.id, product_id, quantity)
             form = CheckoutForm()
-            item_list = cart.cartitem_set.all()  # if cart.cartitem_set.exists() else None
+            item_list = cart.cart_items.all()  # if cart.cartitem_set.exists() else None
 
             return render(response, "main/checkout.html", {"form": form,
                                                            "item_list": item_list,
@@ -83,7 +77,7 @@ def checkout_view(response):
         form = CheckoutForm()
         session_id = get_session_id(response)
         cart = get_cart(session_id)
-        item_list = cart.cartitem_set.all()  # if cart.cartitem_set.exists() else None
+        item_list = cart.cart_items.all()  # if cart.cartitem_set.exists() else None
 
         return render(response, "main/checkout.html", {"form": form,
                                                        "item_list": item_list,
@@ -93,7 +87,7 @@ def checkout_view(response):
 
 def cart_view(response, cart_id):
     cart_obj = Cart.objects.get(id=cart_id)
-    cart_item = cart_obj.cartitem_set.get(id=cart_id)
+    cart_item = cart_obj.cart_items.get(id=cart_id)
 
     price = f"{cart_item.product.price:.2f}"
     # return HttpResponse("<h1>%s</h1>" % cartItem.product.name % cartItem.product.price)
@@ -120,13 +114,14 @@ def order_view(response):
     if response.method == "POST" and response.POST.get("form_type") == "quantity":
         product_id = int(response.POST.get("product_id"))
         quantity = int(response.POST.get("quantity"))
+        instructions = response.POST.get("instructions")
 
         cart = get_cart(session_id)
 
         if cart is not None:
-            update_quantity(cart.id, product_id, quantity)
+            update_cart_details(cart.id, product_id, quantity, instructions)
 
-    item_list = get_cart(session_id).cartitem_set.all()
+    item_list = get_cart(session_id).cart_items.all()
     return render(response, "main/order.html",
                   {"price_data": get_all_price_data(item_list),
                    "update_allowed": True,
@@ -163,16 +158,9 @@ def contact_view(response):
         # print(form.product.widget)
 
         if form.is_valid():
-            # try:
-                contact, related_products = create_contact_from_form(form)
-                contact = save_contact(contact, related_products)
-                return redirect("contact_submitted", contact_type=contact.type.type)
-
-            # except ValidationException as e:
-            #     return render(response, "main/contact.html", {"form": form, "validation_error": e.message})
-            # except Exception as e:
-            #     # Unexpected Error
-            #     return HttpResponseServerError("Base Exception Error:" + str(e))
+            contact, related_products = create_contact_from_form(form)
+            contact = save_contact(contact, related_products)
+            return redirect("contact_submitted", contact_type=contact.type.type)
 
         else:
             # if the form contains errors this will be returned in the context below and displayed on screen
@@ -193,7 +181,7 @@ def render_product_page(request):
     return render(request, 'main/products.html', {
         'products': product_list,
         'classifications': classifications,
-        'cartItems': get_cart(get_session_id(request)).cartitem_set.all()
+        'cartItems': get_cart(get_session_id(request)).cart_items.all()
     })
 
 
@@ -221,9 +209,9 @@ def api_gateway_view(request, api_path):
                     int(request_body['quantity']),
                     request_body['instructions'])
 
-        cart_items = get_cart_items(int(request_body['cart_id']))
-        cart_item_serializer = CartItemSerializer(cart_items, many=True)
-        return Response(cart_item_serializer.data)
+        cart = get_cart(get_session_id(request))
+        cart_serializer = CartSerializer(cart, many=False)
+        return Response(cart_serializer.data)
     else:
         data = {
             'message': 'Hello from Django!'

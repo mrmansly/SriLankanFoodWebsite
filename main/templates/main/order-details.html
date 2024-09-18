@@ -1,6 +1,43 @@
 {% load static %}
 {% load custom_filters %}
 
+<script type="module">
+
+    import {
+        saveInstructionsHandler,
+        cancelInstructionsHandler,
+        incrementQuantityHandler,
+        decrementQuantityHandler,
+        prepareEditInstructionsHandler,
+        getMinusIconElementFromForm
+    } from '../../static/main/js/order-details-utils.js';
+
+    import { addClickListener } from '../../static/main/js/form-utils.js';
+
+    // adding event listeners within javascript (rather than using onclick event in html tag) so that the
+    // methods defined in the above ES6 module can be executed.
+    for (let instructionsForm of document.getElementsByClassName("instructions-form")) {
+        const product_id = instructionsForm.id.substring(0, instructionsForm.id.indexOf("-"));
+        addClickListener(instructionsForm, product_id, "edit-icon", prepareEditInstructionsHandler);
+        addClickListener(instructionsForm, product_id, "save-icon", saveInstructionsHandler);
+        addClickListener(instructionsForm, product_id, "cancel-icon", cancelInstructionsHandler);
+    }
+
+    for (let quantityForm of document.getElementsByClassName("quantity-form")) {
+        const product_id = quantityForm.id.substring(0, quantityForm.id.indexOf("-"));
+
+        if ( Number(quantityForm["quantity"].value) === 0) {
+            const minusIconElement = getMinusIconElementFromForm(quantityForm);
+            minusIconElement.classList.add("quantity-button-disabled")
+        }
+
+        addClickListener(quantityForm, product_id, "add-quantity", incrementQuantityHandler);
+        addClickListener(quantityForm, product_id, "minus-quantity", decrementQuantityHandler);
+    }
+
+
+</script>
+
 <link rel="stylesheet" href="{% static 'main.css' %}">
 
 <div>
@@ -19,36 +56,51 @@
         <tbody>
 
         {% for item in item_list %}
-            <tr class="align-middle">
+            <tr id="{{ item.product_id }}-table-row" class="align-middle">
                 <th scope="row">{{ forloop.counter }}</th>
                 <td>
-                    <div>
-                        {{ item.product.name }}
-                    </div>
-                    {% if item.instructions is not None %}
+                    <form id="{{ item.product.id }}-instructions-form" class="instructions-form" method="post"
+                          action="#">
+                        {% csrf_token %}
+
+                        <div class="d-flex justify-content-between">
+                            <span>{{ item.product.name }}</span>
+                            <i class="clickable-icon edit-icon fa-regular fa-pen-to-square fs-5"></i>
+                        </div>
                         <div class="instructions">
                             {{ item.instructions }}
                         </div>
-                    {% endif %}
-                </td>
-                <td>
-                    <form method="post" action="#">
-                        {% csrf_token %}
-                            {% if update_allowed %}
-                                <div class="d-flex gap-2 align-items-center">
-                                <input type="hidden" name="product_id" value="{{ item.product.id }}">
-                                <label>
-                                    <input type="number" name="quantity" class="form-control cart-quantity" value="{{ item.quantity }}">
-                                </label>
-                                <button name="form_type" value="quantity" type="submit" class="action-button btn btn-primary">Update</button>
-                                </div>
-                            {% else %}
-                                <div class="d-flex justify-content-end">{{ item.quantity }}</div>
-                            {% endif %}
+                        <div class="edit-instructions gap-2 justify-content-between">
+                            <label class="w-100">
+                                <textarea name="instructions" class="form-control">{{ item.instructions }}</textarea>
+                            </label>
+                            <div class="d-flex flex-column gap-2 justify-content-center">
+                                <i class="clickable-icon save-icon fa-solid fa-circle-check fs-5"></i>
+                                <i class="clickable-icon cancel-icon fa-solid fa-circle-xmark fs-5"></i>
+                            </div>
+                        </div>
                     </form>
                 </td>
-                <td class="text-end">${{ item.product.price|floatformat:2 }}</td>
-                <td class="text-end">${{ item.quantity|multiply:item.product.price }}</td>
+                <td>
+                    <form id="{{ item.product.id }}-quantity-form" class="quantity-form" method="post" action="#">
+                        {% csrf_token %}
+                        {% if update_allowed %}
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                <label>
+                                    <input type="number" name="quantity" class="form-control cart-quantity"
+                                           value="{{ item.quantity }}">
+                                </label>
+                                <i class="clickable-icon minus-quantity minus-icon fa-solid fa-circle-minus fs-5"></i>
+                                <i class="clickable-icon add-quantity add-icon fa-solid fa-circle-plus fs-5"></i>
+                            </div>
+                        {% else %}
+                            <div class="d-flex justify-content-end">{{ item.quantity }}</div>
+                        {% endif %}
+                    </form>
+                </td>
+                <td id="unitPrice" class="text-end">${{ item.product.price|floatformat:2 }}</td>
+                <td id="extendedPrice" class="text-end">${{ item.quantity|multiply:item.product.price }}</td>
             </tr>
         {% endfor %}
 
@@ -57,7 +109,7 @@
             <td class="border-top-double"></td>
             <td class="border-top-double"></td>
             <td class="border-top-double text-end">Sub Total</td>
-            <td class="text-end border-top-double">${{ price_data.net_cost|floatformat:2 }}</td>
+            <td id="summarySubTotal" class="text-end border-top-double">${{ price_data.net_cost|floatformat:2 }}</td>
         </tr>
 
         {% if price_data.discount > 0 %}
@@ -66,7 +118,7 @@
                 <td></td>
                 <td></td>
                 <td class="text-end">Discount</td>
-                <td class="text-end">- ${{ price_data.discount|floatformat:2 }}</td>
+                <td id="summaryDiscount" class="text-end">-${{ price_data.discount|floatformat:2 }}</td>
             </tr>
 
             <tr>
@@ -74,7 +126,7 @@
                 <td></td>
                 <td></td>
                 <td class="text-end border-top-double">Revised Sub Total</td>
-                <td class="text-end border-top-double">${{ price_data.revised_net_cost|floatformat:2 }}</td>
+                <td id="summaryRevisedSubTotal" class="text-end border-top-double">${{ price_data.revised_net_cost|floatformat:2 }}</td>
             </tr>
         {% endif %}
 
@@ -84,7 +136,7 @@
             <td></td>
             <td></td>
             <td class="text-end">GST (10%)</td>
-            <td class="text-end">${{ price_data.gst|floatformat:2 }}</td>
+            <td id="summaryGST" class="text-end">${{ price_data.gst|floatformat:2 }}</td>
         </tr>
 
         <tr>
@@ -92,7 +144,8 @@
             <td></td>
             <td></td>
             <td class="text-end fw-bold border-top-double-2 border-bottom-double">Total</td>
-            <td class="text-end fw-bold border-top-double-2 border-bottom-double">${{ price_data.total_price|floatformat:2 }}</td>
+            <td id="summaryTotal" class="text-end fw-bold border-top-double-2 border-bottom-double">
+                ${{ price_data.total_price|floatformat:2 }}</td>
         </tr>
 
         </tbody>

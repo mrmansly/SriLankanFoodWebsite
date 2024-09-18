@@ -1,14 +1,14 @@
 from django.template.loader import render_to_string
 from ..models import Order, OrderProduct
 from . email_service import send_email
-from . price_service import get_total_price, get_gst, get_net_cost, get_all_price_data
+from . price_service import get_all_price_data
 
 
 def create_order(order, cart):
 
     order.save()
 
-    for cart_item in cart.cartitem_set.all():
+    for cart_item in cart.cart_items.all():
         order_item = OrderProduct(product=cart_item.product,
                                   order=order,
                                   quantity=cart_item.quantity,

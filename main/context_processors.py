@@ -22,7 +22,7 @@ def get_cart(request):
 def get_cart_items(cart: Cart):
     count = 0
     if cart is not None:
-        for item in cart.cartitem_set.all():
+        for item in cart.cart_items.all():
             count += item.quantity
 
     return count

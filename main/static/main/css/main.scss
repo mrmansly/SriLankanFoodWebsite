@@ -181,6 +181,39 @@ html, body {
   padding-left: 1rem;
 }
 
+.edit-instructions {
+  display: none;
+}
+
+.edit-icon {
+  color: $lankan-saffron;
+}
+
+.save-icon {
+  color: $lankan-green;
+}
+
+.cancel-icon {
+  color: $lankan-dark-red;
+}
+
+.add-icon {
+  color: $lankan-saffron;
+}
+
+.minus-icon {
+  color: $lankan-saffron;
+}
+
+.clickable-icon {
+  cursor: pointer;
+}
+
+.quantity-button-disabled {
+  cursor: revert;
+  opacity: 0.3;
+}
+
 .product-item {
   padding: 1rem;
   border: 2px solid $lankan-dark-blue;
@@ -251,12 +284,11 @@ html, body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 
   > label {
     align-items: center;
   }
-
 }
 
 .sidebar {
@@ -536,9 +568,11 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+  max-width: 50px;
 }
 
 /* Hide spinner arrows for Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+  max-width: 50px;
 }
