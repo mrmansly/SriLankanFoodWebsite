@@ -8,6 +8,8 @@
         if ((event.target === acknowledgementCountryModal.querySelector('.modal-close-button')) ||
             !modalContainerElement.contains(event.target)
         ) {
+            // add a flag so that the modal doesn't display in subsequent visits
+            localStorage.setItem('acknowledgementOfCountry', 'true');
             closeModal('acknowledgement-country-modal');
         }
     });

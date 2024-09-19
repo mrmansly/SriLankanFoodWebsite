@@ -46,7 +46,16 @@
             if (window.innerWidth <= 576) {
                 toggleMenu(true);
             }
+
+            displayAcknowledgementOfCountry();
         });
+
+        function displayAcknowledgementOfCountry() {
+            if (!localStorage.getItem("acknowledgementOfCountry")) {
+                const acknowledgementModal = document.getElementById("acknowledgement-country-modal");
+                acknowledgementModal.style.display = 'flex';
+            }
+        }
 
         function updateCartItems(items) {
             const cartItemElement = document.getElementById("cart-items");
