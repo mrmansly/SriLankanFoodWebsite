@@ -34,7 +34,7 @@ export function decrementQuantityHandler(productId) {
     }
 }
 
-function getProductItemForm(productId) {
+export function getProductItemForm(productId) {
     return document.getElementById("product-item-form-"+productId);
 }
 
@@ -46,13 +46,23 @@ function saveQuantity(productId, increment) {
     return updateCartItemDetails(newQuantity, productId, instructions);
 }
 
-export function addListenerForFormSubmit(product_id) {
-    const formElement = document.getElementById('product-item-form-' + product_id);
+export function setUpdateButtonDisabledStatus(form, disableFlag) {
+    const updateButton = form.getElementsByClassName("update-button")[0];
+    updateButton.disabled = disableFlag;
+}
+
+export function addListenerForFormSubmit(productId) {
+    const formElement = getProductItemForm(productId);
 
     formElement.addEventListener("submit", (event) => {
         const formData = new FormData(event.target);
         event.preventDefault();
         updateCartItemDetails(formData.get('quantity'), formData.get('product_id'), formData.get('instructions'))
+            .then(data => {
+                // disable the Update button to indicate the save has taken place
+                setUpdateButtonDisabledStatus(formElement, true);
+                return data;
+            })
             .catch(error => {
                 console.log("Form Submit Button: " + error);
             });

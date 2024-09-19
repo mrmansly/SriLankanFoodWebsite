@@ -6,20 +6,31 @@
     import {
         addListenerForFormSubmit,
         incrementQuantityHandler,
-        decrementQuantityHandler
+        decrementQuantityHandler,
+        getProductItemForm,
+        setUpdateButtonDisabledStatus
     } from '../../../static/main/js/product-item-row-utils.js';
     import {addClickListener} from '../../../static/main/js/form-utils.js';
 
     function addListenersForQuantity(productId) {
-        const form = document.getElementById('product-item-form-' + productId);
+        const form = getProductItemForm(productId);
         addClickListener(form, productId, "add-quantity", incrementQuantityHandler);
         addClickListener(form, productId, "minus-quantity", decrementQuantityHandler);
     }
 
+    function addListenersForFormChanges(productId) {
+        const form = getProductItemForm(productId);
+
+        form.addEventListener('input', () => {
+            setUpdateButtonDisabledStatus(form, false);
+        });
+    }
+
     addListenerForFormSubmit({{ product.id }});
+    addListenersForFormChanges({{ product.id }});
     addListenersForQuantity({{ product.id }})
 
-    const form = document.getElementById('product-item-form-' + {{ product.id }});
+    const form = getProductItemForm({{ product.id }});
     if (Number(form['quantity'].value) === 0) {
         const minusQuantityElement = form.getElementsByClassName('minus-icon')[0];
         minusQuantityElement.classList.add('quantity-button-disabled');
@@ -85,7 +96,7 @@
 
                                 <input type="hidden" name="product_id"
                                        value="{{ product.id }}">
-                                <button type="submit" class="action-button btn btn-primary">Update</button>
+                                <button type="submit" disabled class="update-button action-button btn btn-primary">Update</button>
                             </div>
                             <div class="col-12 mt-2">
                                 <label for="instructions" class="align-top">Special Instructions</label>

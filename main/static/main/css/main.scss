@@ -214,6 +214,11 @@ html, body {
   opacity: 0.3;
 }
 
+.disabled-button {
+  cursor: revert;
+  opacity: 0.3;
+}
+
 .product-item {
   padding: 1rem;
   border: 2px solid $lankan-dark-blue;
@@ -363,12 +368,17 @@ html, body {
 
 
 .action-button {
+
   background-color: $lankan-dark-blue;
   color: $lankan-white;
 
   &:hover {
     background-color: $lankan-light-blue;
     color: $lankan-yellow
+  }
+
+  &:disabled {
+    opacity: 0.3;
   }
 }
 
