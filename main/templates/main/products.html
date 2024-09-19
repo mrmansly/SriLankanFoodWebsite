@@ -7,6 +7,11 @@
 
     <script type="module">
 
+        const classificationHeaders = document.getElementsByClassName("classification-name-label");
+        for (let classificationHeader of classificationHeaders) {
+            classificationHeader.addEventListener("click", () => toggleClassificationMenuSection(classificationHeader.id));
+        }
+
         // add a listener on the scrollHeight property change so that the height is correctly
         // calculated after the DOM has loaded.
         const folderElements = document.getElementsByClassName("folder-content");
@@ -59,8 +64,8 @@
                     be something to get your taste-buds salivating. Enjoy!</p>
                 <p>These items are cooked fresh upon receiving confirmation of your order so please add any special
                     requirements at the time of ordering!</p>
-                <p>Our chief cook can take up to 2-3 days to have your order ready. Please order in advance to secure your
-                    curries on time!</p>
+                <p>Our chief cook can take up to 2-3 days to have your order ready. Please order in advance to secure
+                    your curries on time!</p>
             </div>
             <div class="col-12 col-md-6 text-center">
                 <img class="image-frame" src="{% static 'images/family/cutting_onions.jpg' %}" alt="Menu Page Image">
@@ -78,8 +83,7 @@
         <div class="classification-item">
 
             <div id="{{ classification.name }}"
-                 class="classification-name-label{% if classification.product_set.exists %} contains-menu-items{% endif %}"
-                 onclick="{% if classification.product_set.exists %}toggleClassificationMenuSection('{{ classification.name }}'){% endif %}">
+                 class="classification-name-label{% if classification.product_set.exists %} contains-menu-items{% endif %}">
                 <i class="fa fa-arrows-v"></i>
                 <h3>{{ classification.name }}</h3>
             </div>
