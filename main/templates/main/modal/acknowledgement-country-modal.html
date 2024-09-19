@@ -1,0 +1,28 @@
+<script type="module">
+    import {closeModal} from '../../../static/main/js/modal-utils.js';
+
+    const acknowledgementCountryModal = document.getElementById("acknowledgement-country-modal");
+    const modalContainerElement = acknowledgementCountryModal.querySelector('.container');
+
+    document.addEventListener('click', (event) => {
+        if ((event.target === acknowledgementCountryModal.querySelector('.modal-close-button')) ||
+            !modalContainerElement.contains(event.target)
+        ) {
+            closeModal('acknowledgement-country-modal');
+        }
+    });
+
+</script>
+
+<div id="acknowledgement-country-modal" class="modal no-cursor-change">
+    <div class="container pb-2">
+        <div class="close">
+            <button class="modal-close-button">&times;</button>
+        </div>
+        <h1>Acknowledgement of Country</h1>
+        <p>Sri Lankan Delights acknowledges Traditional Owners of Country
+            throughout Australia and recognises their continuing connection to lands, waters and
+            communities. We pay respect to Aboriginal and Torres Strait Islander cultures; and
+            to Elders past and present.</p>
+    </div>
+</div>

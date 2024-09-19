@@ -444,23 +444,36 @@ html, body {
 }
 
 /* Modal Styles */
+.no-cursor-change {
+  cursor: default !important;
+}
+
+.modal-close-button {
+  color: red;
+  background-color: $lankan-green;
+  border-width: 0;
+}
+
 .modal {
-  display: none;
+  display: flex;
   position: fixed;
   z-index: 1;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
+  align-items: center;
+  justify-content: center;
   overflow: auto;
   background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.75);
   text-align: center;
   color: $lankan-saffron;
 
   > div {
     background-color: $lankan-green;
-    border-radius: 20px
+    border-radius: 20px;
+    max-width: 600px;
   }
 
   h1 {
@@ -475,21 +488,28 @@ html, body {
 
 }
 
+#image-preview-modal {
+  display: none;
+}
+
+#acknowledgement-country-modal {
+  .container {
+    border-width: 10px;
+    border-style: solid;
+    border-image: linear-gradient(to right, $lankan-dark-red, $lankan-yellow, $lankan-black, $lankan-yellow, $lankan-dark-red) 1;
+  }
+}
+
 .modal-content {
   margin: auto;
   display: block;
   max-width: 50%;
-  //max-width: 700px;
 }
 
 .close {
-  position: relative;
-  top: 0;
-  right: 35px;
   color: #fff;
   font-size: 40px;
   font-weight: bold;
-  cursor: pointer;
   text-align: right;
 }
 
@@ -508,20 +528,20 @@ html, body {
   }
 }
 
-.preview-image-container {
+#preview-image-container {
   overflow: hidden;
   position: relative;
+
+  > img {
+    transition: transform 0.3s ease;
+    width: 100%;
+    height: auto;
+    background-color: $lankan_green;
+    border-width: 0;
+  }
 }
 
-.preview-image-container img {
-  transition: transform 0.3s ease;
-  width: 100%;
-  height: auto;
-  background-color: $lankan_green;
-  border-width: 0;
-}
-
-.preview-image-container:hover img {
+#preview-image-container:hover img {
   transform: scale(2); //Zoom Factor
 }
 
