@@ -42,7 +42,7 @@ def add_product(cart_id, product_id, quantity: int, instructions):
 
 
 # instructions - if "None" passed in then keep existing instructions
-def update_cart_details(cart_id, product_id, quantity: int, instructions):
+def update_cart_details(cart_id, product_id, quantity: int, instructions=None):
 
     cart = Cart.objects.get(id=cart_id)
 

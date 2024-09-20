@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from .models import Cart, Contact, Order, Faq, FaqCategory, Product, Classification
+from .models import Cart, Contact, Order, Faq, FaqCategory, Product, Classification, ContactType
 from .forms import CheckoutForm, ContactForm
 from datetime import datetime
 from .services.cart_service import get_cart, add_product, update_cart_details
@@ -10,7 +10,8 @@ from .services.contact_service import save_contact
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import CartSerializer, ContactSerializer
+from .serializers import CartSerializer, ContactSerializer, ProductSerializer, ClassificationSerializer, \
+    ContactTypeSerializer, FaqCategorySerializer, FaqSerializer
 
 
 def index_view(response):
@@ -150,6 +151,7 @@ def create_contact_from_form(form):
     related_products = form.cleaned_data['products']
     return contact, related_products
 
+
 def contact_view(response):
     if response.method == "POST":
         form = ContactForm(response.POST)
@@ -227,3 +229,29 @@ class CartViewSet(viewsets.ModelViewSet):
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+class ClassificationViewSet(viewsets.ModelViewSet):
+    queryset = Classification.objects.all()
+    serializer_class = ClassificationSerializer
+
+
+class ContactTypeViewSet(viewsets.ModelViewSet):
+    queryset = ContactType.objects.all()
+    serializer_class = ContactTypeSerializer
+
+
+class FaqCategoryViewSet(viewsets.ModelViewSet):
+    queryset = FaqCategory.objects.all()
+    serializer_class = FaqCategorySerializer
+
+
+class FaqViewSet(viewsets.ModelViewSet):
+    queryset = Faq.objects.all()
+    serializer_class = FaqSerializer
+
