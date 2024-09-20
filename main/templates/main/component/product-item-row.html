@@ -18,6 +18,20 @@
         addClickListener(form, productId, "minus-quantity", decrementQuantityHandler);
     }
 
+    function openModalWithImage(imageSrc, title, description) {
+        const modal = document.getElementById("image-preview-modal");
+        const modalImage = document.getElementById("preview-image");
+        const modalTitle = document.getElementById("preview-image-title");
+        const modalDescription = document.getElementById("preview-image-description");
+
+        modal.style.display = "flex";
+        modalImage.src = imageSrc;
+        modalTitle.textContent = title;
+        modalDescription.textContent = description;
+
+        document.body.classList.add('no-cursor-change');
+    }
+
     function addListenersForFormChanges(productId) {
         const form = getProductItemForm(productId);
 
@@ -26,9 +40,21 @@
         });
     }
 
+    function getImageLocation(image) {
+        return '../../../static/main/images/menu/' + image;
+    }
+
+    function addListenersForImagePreview(productId, name, description, image) {
+        const form = getProductItemForm(productId);
+        const imageElement = form.getElementsByClassName('product-img')[0]
+        const imageLocation = getImageLocation(image);
+        imageElement.addEventListener('click', () => openModalWithImage(imageLocation, name, description));
+    }
+
     addListenerForFormSubmit({{ product.id }});
     addListenersForFormChanges({{ product.id }});
-    addListenersForQuantity({{ product.id }})
+    addListenersForQuantity({{ product.id }});
+    addListenersForImagePreview({{ product.id }}, '{{ product.name }}', '{{ product.description }}', '{{ product.image }}');
 
     const form = getProductItemForm({{ product.id }});
     if (Number(form['quantity'].value) === 0) {
@@ -75,12 +101,8 @@
                                 <img src="{% static product_image %}"
                                      alt="Menu Item"
                                      class="product-img img-fluid"
-                                     onclick="openModal(
-                                             '{% static product_image %}',
-                                             '{{ product.name }}', '{{ product.description }}')"
                                      onerror="this.onerror=null; this.src='{% static 'images/no-image.png' %}'">
                             {% endwith %}
-
                         </div>
 
                         <div class="col-12 col-md-6">
