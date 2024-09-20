@@ -316,7 +316,13 @@ html, body {
   a:hover {
     color: $lankan-yellow;
   }
+
+  @media (max-width: 576px) {
+    display: none;
+  }
 }
+
+
 
 .classification-name-label {
   background: linear-gradient(to right, $lankan-saffron, $lankan-yellow 30%, $lankan-white 80%);
