@@ -1,26 +1,27 @@
-{% load static %}
+<script type="module">
+    import {closeModal} from '../../../static/main/js/modal-utils.js';
 
-<script src="{% static 'js/modal-utils.js' %}"></script>
+    const imagePreviewModal = document.getElementById("image-preview-modal");
+    const modalContainerElement = imagePreviewModal.querySelector('.container');
 
-<script type="text/javascript">
-
-    window.onclick = function (event) {
-        const modal = document.getElementById("imagePreviewModal");
-        if (event.target === modal) {
-            modal.style.display = "none";
+    document.addEventListener('click', (event) => {
+        if (event.target === imagePreviewModal.querySelector('.modal-close-button')) {
+            closeModal('image-preview-modal');
         }
-    }
+    });
 
 </script>
 
-<div id="imagePreviewModal" class="modal">
+<div id="image-preview-modal" class="modal no-cursor-change">
     <div class="container pb-2">
-        <div class="close" onclick="closeModal()">&times;</div>
-        <h1 id="previewImageTitle"></h1>
-        <div id="previewImageContainer" class="preview-image-container">
-            {# src is populated via javascript in modal-utils openModal method from the calling window #}
-            <img src="" class="modal-content" id="previewImage" alt="Image Preview">
+        <div class="close">
+            <button class="modal-close-button">&times;</button>
         </div>
-        <p id="previewImageDescription"></p>
+        <h1 id="preview-image-title"></h1>
+        <div id="preview-image-container">
+            {# src is populated via javascript in modal-utils openModal method from the calling window #}
+            <img src="" class="modal-content" id="preview-image" alt="Image Preview">
+        </div>
+        <p id="preview-image-description"></p>
     </div>
 </div>

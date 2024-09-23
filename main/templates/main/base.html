@@ -36,17 +36,25 @@
     <script type="text/javascript">
 
         document.addEventListener("DOMContentLoaded", function () {
+            displayCartItemVisibility();
+            displayAcknowledgementOfCountry();
+        });
+
+        function displayCartItemVisibility() {
             const cartItemElement = document.getElementById("cart-items");
             if (cartItemElement.textContent === '' || cartItemElement.textContent === '0') {
                 toggleCartItemVisibility(false);
             } else {
                 toggleCartItemVisibility(true);
             }
+        }
 
-            if (window.innerWidth <= 576) {
-                toggleMenu(true);
+        function displayAcknowledgementOfCountry() {
+            if (!localStorage.getItem("acknowledgementOfCountry")) {
+                const acknowledgementModal = document.getElementById("acknowledgement-country-modal");
+                acknowledgementModal.style.display = 'flex';
             }
-        });
+        }
 
         function updateCartItems(items) {
             const cartItemElement = document.getElementById("cart-items");
@@ -69,9 +77,9 @@
             }
         }
 
-        function toggleMenu(forceHide = false) {
+        function toggleMenu() {
             const sideNavElement = document.getElementById("sidenav");
-            if (!forceHide && sideNavElement.style.display === 'none') {
+            if (window.getComputedStyle(sideNavElement).display === 'none') {
                 sideNavElement.style.display = 'flex';
             } else {
                 sideNavElement.style.display = 'none';
@@ -146,5 +154,8 @@
         </div>
     </footer>
 </div>
+
+{% include 'main/modal/acknowledgement-country-modal.html' %}
+
 </body>
 </html>
