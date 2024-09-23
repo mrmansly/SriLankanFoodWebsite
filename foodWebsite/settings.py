@@ -28,6 +28,9 @@ DEBUG = True
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',')
 CSRF_TRUSTED_ORIGINS = os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',')
 
+# Expected value of dev_local (sqlite3 db), dev_cloud (RDS cloud db), prod (Production with RDS Cloud db)
+ENVIRONMENT = os.getenv('DJANGO_ENV', 'dev_local')  # Default to a 'dev_local' environment
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -79,12 +82,35 @@ WSGI_APPLICATION = 'foodWebsite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if ENVIRONMENT == 'prod':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'SLD_PROD', # os.getenv('DB_NAME'),  # e.g., 'myproject'
+            'USER': 'admin', # os.getenv('DB_USER'),  # e.g., 'username'
+            'PASSWORD': 'phb7HndPmhbGE1PA5nr9', # os.getenv('DB_PASSWORD'),  # e.g., 'password'
+            'HOST': 'sld-db.cf0u2ekiaxoj.ap-southeast-2.rds.amazonaws.com', # os.getenv('DB_HOST'),  # e.g., 'your-rds-endpoint.amazonaws.com'
+            'PORT': '3306'
+        }
     }
-}
+elif ENVIRONMENT == 'dev_cloud':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'SLD_DEV', # os.getenv('DB_NAME'),  # e.g., 'myproject'
+            'USER': 'admin', # os.getenv('DB_USER'),  # e.g., 'username'
+            'PASSWORD': 'phb7HndPmhbGE1PA5nr9', # os.getenv('DB_PASSWORD'),  # e.g., 'password'
+            'HOST': 'sld-db.cf0u2ekiaxoj.ap-southeast-2.rds.amazonaws.com', # os.getenv('DB_HOST'),  # e.g., 'your-rds-endpoint.amazonaws.com'
+            'PORT': '3306'
+        }
+    }
+elif ENVIRONMENT == 'dev_local':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
