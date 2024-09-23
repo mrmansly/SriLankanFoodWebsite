@@ -15,8 +15,7 @@
 
         {% include 'main/order-details.html' %}
     {% else %}
-        <h1>The Rice Cooker is empty</h1>
-        <p>Add some items from the <a href="/products">Menu</a> to fill it (and your tummy) up!</p>
+        {% include 'main/component/empty-rice-cooker.html' %}
     {% endif %}
 
 {% endblock %}
