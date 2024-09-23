@@ -4,7 +4,11 @@
 {% block title %}Order Details{% endblock %}
 
 {% block content %}
-    {% include 'main/order-details.html' %}
+    {% if item_list.exists %}
+        {% include 'main/order-details.html' %}
+    {% else %}
+        {% include 'main/component/empty-rice-cooker.html' %}
+    {% endif %}
 {% endblock %}
 
 <button class="action-button btn btn-primary">Checkout</button>
