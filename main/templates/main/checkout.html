@@ -1,6 +1,13 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
+{% block head_content %}
+    <script type="module">
+        const menuButton = document.getElementById('menu-button');
+        menuButton.addEventListener('click', () => window.location.href='{% url 'products' %}' );
+    </script>
+{% endblock %}
+
 {% block window_title %}Checkout{% endblock %}
 {% block title %}Checkout{% endblock %}
 
@@ -10,7 +17,10 @@
         <form method="post" class="form-container container" action="/checkout/">
             {%  csrf_token %}
             {{ form.as_div }}
-            <button class="align-right action-button btn btn-primary my-3" name="form_type" value="checkout" type="submit">Confirm Order</button>
+            <div class="d-flex flex-row my-3 gap-2">
+                <button id="menu-button" type="button" class="action-button btn btn-primary">Back to Menu</button>
+                <button class="action-button btn btn-primary" name="form_type" value="checkout" type="submit">Confirm Order</button>
+            </div>
         </form>
 
         {% include 'main/order-details.html' %}
