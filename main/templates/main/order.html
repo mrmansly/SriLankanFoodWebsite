@@ -1,14 +1,28 @@
 {% extends 'main/base.html' %}
 
+{% block head_content %}
+    <script type="module">
+        const checkoutButton = document.getElementById('checkout-button');
+        checkoutButton.addEventListener('click', () => window.location.href='{% url 'checkout' %}' );
+
+        const menuButton = document.getElementById('menu-button');
+        menuButton.addEventListener('click', () => window.location.href='{% url 'products' %}' );
+    </script>
+{% endblock %}
+
 {% block window_title %}Order Details{% endblock %}
 {% block title %}Order Details{% endblock %}
 
 {% block content %}
     {% if item_list.exists %}
         {% include 'main/order-details.html' %}
+        <div class="d-flex flex-row gap-2">
+            <button id="menu-button" class="action-button btn btn-primary">Back to Menu</button>
+            <button id="checkout-button" class="action-button btn btn-primary">Checkout</button>
+        </div>
     {% else %}
         {% include 'main/component/empty-rice-cooker.html' %}
     {% endif %}
+
 {% endblock %}
 
-<button class="action-button btn btn-primary">Checkout</button>
