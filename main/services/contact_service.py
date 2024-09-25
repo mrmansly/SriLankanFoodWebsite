@@ -1,5 +1,5 @@
 from ..models import Contact, Product
-from datetime import datetime
+from django.utils import timezone
 
 
 def save_contact(form) -> Contact:
@@ -21,7 +21,7 @@ def create_from_form(form):
     contact.mobile = form.cleaned_data['mobile']
     contact.home_phone = form.cleaned_data['home_phone']
     contact.rating = form.cleaned_data['rating']
-    contact.created_date = datetime.now()
+    contact.created_date = timezone.now()
 
     related_products = form.cleaned_data['products']
     return contact, related_products

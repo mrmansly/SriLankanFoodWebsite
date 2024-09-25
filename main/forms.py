@@ -15,7 +15,6 @@ class ModelFormWithClassMixin(forms.ModelForm):
 
 
 class CheckoutForm(ModelFormWithClassMixin, forms.ModelForm):
-
     class Meta:
         model = Order
         fields = ['first_name', 'last_name', 'email', 'mobile', 'home_phone', 'requested_delivery_date']
@@ -27,9 +26,9 @@ class CheckoutForm(ModelFormWithClassMixin, forms.ModelForm):
 class ContactForm(ModelFormWithClassMixin, forms.ModelForm):
     class Meta:
         model = Contact
-        product = forms.ModelMultipleChoiceField(queryset=Product.objects.all(),
-                                                 widget=forms.SelectMultiple,
-                                                 required=True)
+        products = forms.ModelMultipleChoiceField(queryset=Product.objects.all(),
+                                                  widget=forms.SelectMultiple,
+                                                  required=True)
         fields = ['type', 'title', 'message', 'products', 'preferred_contact', 'response_required', 'email',
                   'mobile', 'home_phone', 'rating']
         widgets = {
@@ -43,7 +42,3 @@ class ContactForm(ModelFormWithClassMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)
         self.fields['products'].required = False
-
-
-
-

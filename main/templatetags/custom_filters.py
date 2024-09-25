@@ -19,7 +19,10 @@ def chilli_range(value):
 
 @register.filter
 def filter_by_category(queryset, category):
-    return queryset.filter(category=category)
+    if category is not None:
+        return queryset.filter(category=category)
+
+    return None
 
 
 @register.filter

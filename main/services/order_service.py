@@ -2,7 +2,7 @@ from django.template.loader import render_to_string
 from ..models import Order, OrderProduct
 from . email_service import send_email
 from . price_service import get_all_price_data, get_total_price
-from datetime import datetime
+from django.utils import timezone
 
 
 def save_checkout_form(form, cart) -> Order:
@@ -12,7 +12,7 @@ def save_checkout_form(form, cart) -> Order:
     order.email = form.cleaned_data["email"]
     order.mobile = form.cleaned_data["mobile"]
     order.home_phone = form.cleaned_data["home_phone"]
-    order.created_date = datetime.now()
+    order.created_date = timezone.now()
 
     order.total_price = get_total_price(cart.cart_items.all())
 

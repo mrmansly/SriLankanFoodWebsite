@@ -1,5 +1,5 @@
 import json
-import datetime
+from django.utils import timezone
 from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from django.core.exceptions import ValidationError
@@ -19,6 +19,10 @@ class TestViews(TestCase):
 
         Product.objects.create(name='Laptop', price=1000)
         Product.objects.create(name='Book', price=20)
+
+        session = self.client.session
+        session['session_key'] = 'mocked-session-id'
+        session.save()
 
     def test_index_view_GET(self):
         url = reverse('home')
@@ -131,7 +135,7 @@ class TestViews(TestCase):
             'last_name': 'Doe',
             'email': 'john@example.com',
             'mobile': '0000000000',
-            'requested_delivery_date': datetime.datetime.now()
+            'requested_delivery_date': timezone.now()
             # Include any other required fields for CheckoutForm
         }
 

@@ -12,7 +12,7 @@ def cart_context(request):
 
 
 def get_cart(request):
-    if request.session is None:
+    if request.session is None or request.session.session_key is None:
         return None
     else:
         cart_obj, created = Cart.objects.get_or_create(session_id=request.session.session_key)
