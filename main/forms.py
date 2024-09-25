@@ -41,4 +41,3 @@ class ContactForm(ModelFormWithClassMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)
-        self.fields['products'].required = False
