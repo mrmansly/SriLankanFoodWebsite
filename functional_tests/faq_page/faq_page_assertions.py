@@ -1,0 +1,3 @@
+class FaqPageAssertions:
+    TITLE = "FAQ"
+    

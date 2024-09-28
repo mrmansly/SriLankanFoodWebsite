@@ -18,13 +18,13 @@ def index_view(response):
     return render(response, "main/home.html", {})
 
 
-def products_view(request):
+def menu_view(request):
     classifications = Classification.objects.all().order_by("order")
     product_list = Product.objects.all()
 
     # display a success message that contact was submitted, but for now just
     # go back to the products page
-    return render(request, 'main/products.html', {
+    return render(request, 'main/menu.html', {
         'products': product_list,
         'classifications': classifications,
         'cartItems': get_cart(get_session_id(request)).cart_items.all()

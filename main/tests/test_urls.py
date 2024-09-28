@@ -1,6 +1,6 @@
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
-from main.views import index_view, products_view, checkout_view, about_view, \
+from main.views import index_view, menu_view, checkout_view, about_view, \
     order_view, faq_view, contact_view, api_gateway_view, contact_submitted_view
 
 
@@ -10,9 +10,9 @@ class TestUrls(SimpleTestCase):
         url = reverse('home')
         self.assertEqual(resolve(url).func, index_view)
 
-    def test_products_url_resolves(self):
-        url = reverse('products')
-        self.assertEqual(resolve(url).func, products_view)
+    def test_menu_url_resolves(self):
+        url = reverse('menu')
+        self.assertEqual(resolve(url).func, menu_view)
 
     def test_checkout_url_resolves(self):
         url = reverse('checkout')

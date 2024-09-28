@@ -40,13 +40,13 @@ class TestViews(TestCase):
         mock_cart.cart_items.all.return_value = ['Item1', 'Item2']
 
         # Simulate a GET request to the products view
-        response = self.client.get(reverse('products'))  # Adjust the name if needed
+        response = self.client.get(reverse('menu'))  # Adjust the name if needed
 
         # Assert the response is 200 OK
         self.assertEqual(response.status_code, 200)
 
         # Assert the template used is 'main/products.html'
-        self.assertTemplateUsed(response, 'main/products.html')
+        self.assertTemplateUsed(response, 'main/menu.html')
 
         # Assert the context contains the expected data
         self.assertIn('products', response.context)
