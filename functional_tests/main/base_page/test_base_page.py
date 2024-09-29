@@ -1,7 +1,8 @@
+import time
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from ..acknowledgement_of_country.acknowledgement_of_country_locators import AcknowledgementOfCountryLocators
 from .base_page_locators import BasePageLocators as Locators
 from django.urls import reverse
 from django.test import override_settings
@@ -11,33 +12,10 @@ from ..about_page.about_page_assertions import AboutPageAssertions
 from ..order_details_page.order_details_page_assertions import OrderDetailsPageAssertions
 from ..faq_page.faq_page_assertions import FaqPageAssertions
 from ..contact_page.contact_page_assertions import ContactPageAssertions
+from ..sri_lankan_delights_test_case import SriLankanDelightsTestCase
 
 
-class TestBasePage(StaticLiveServerTestCase):
-
-    def setUp(self):
-        self.browser = webdriver.Chrome()
-        self.browser.get(self.live_server_url)
-        self.browser.set_page_load_timeout(10)
-        self.browser.implicitly_wait(10)
-
-        # the display of this modal is governed by a local storage flag that is not retained for each test,
-        # so explicitly close the modal and continue with the rest of the test.
-        self.close_acknowledgement_of_country()
-
-    def close_acknowledgement_of_country(self):
-        element = self.browser.find_element(By.ID, AcknowledgementOfCountryLocators.CLOSE_BUTTON_ID)
-        # Use JavaScript to click the button to avoid being intercepted by the modal
-        self.browser.execute_script("arguments[0].click();", element)
-
-    def tearDown(self):
-        if self.browser:
-            try:
-                self.browser.quit()
-            except BrokenPipeError as p:
-                print(f"Broken Pipe error during tearDown: {p}")
-            except Exception as e:
-                print(f"Error during tearDown: {e}")
+class TestBasePage(SriLankanDelightsTestCase):
 
     def test_no_cart_visible(self):
         # check that the cart item is not visible in the header if there are no items
@@ -52,7 +30,7 @@ class TestBasePage(StaticLiveServerTestCase):
             'context_processors': [
                 'django.template.context_processors.request',
                 # Use this mocked context to avoid session specific dependencies
-                'functional_tests.base_page.mock_context_processor.mocked_cart_context',
+                'functional_tests.main.base_page.mock_context_processor.mocked_cart_context',
             ],
         }
     }])
@@ -67,6 +45,7 @@ class TestBasePage(StaticLiveServerTestCase):
         self.browser.get(self.live_server_url)
         element = self.browser.find_element(By.ID, element_id)
         self.browser.execute_script("arguments[0].scrollIntoView(); arguments[0].click();", element)
+        time.sleep(0.1)
         self.assertEqual(self.browser.title, title_assertion)
 
     def test_sidenav_home_navigation(self):
