@@ -9,7 +9,7 @@ from django.test import override_settings
 from ..home_page.home_page_assertions import HomePageAssertions
 from ..menu_page.menu_page_assertions import MenuPageAssertions
 from ..about_page.about_page_assertions import AboutPageAssertions
-from ..order_details_page.order_details_page_assertions import OrderDetailsPageAssertions
+from ..order_page.order_page_assertions import OrderPageAssertions
 from ..faq_page.faq_page_assertions import FaqPageAssertions
 from ..contact_page.contact_page_assertions import ContactPageAssertions
 from ..sri_lankan_delights_test_case import SriLankanDelightsTestCase
@@ -55,7 +55,7 @@ class TestBasePage(SriLankanDelightsTestCase):
         self.nav_test_for("sidenav-menu", MenuPageAssertions.TITLE)
 
     def test_sidenav_order_details_navigation(self):
-        self.nav_test_for("sidenav-order-details", OrderDetailsPageAssertions.TITLE)
+        self.nav_test_for("sidenav-order-details", OrderPageAssertions.TITLE)
 
     def test_sidenav_about_navigation(self):
         self.nav_test_for("sidenav-about", AboutPageAssertions.TITLE)
@@ -73,7 +73,7 @@ class TestBasePage(SriLankanDelightsTestCase):
         self.nav_test_for("footer-menu", MenuPageAssertions.TITLE)
 
     def test_footer_order_details_navigation(self):
-        self.nav_test_for("footer-order-details", OrderDetailsPageAssertions.TITLE)
+        self.nav_test_for("footer-order-details", OrderPageAssertions.TITLE)
 
     def test_footer_about_navigation(self):
         self.nav_test_for("footer-about", AboutPageAssertions.TITLE)
