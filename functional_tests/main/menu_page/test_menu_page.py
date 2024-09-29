@@ -1,5 +1,37 @@
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from ..sri_lankan_delights_test_case import SriLankanDelightsTestCase
+from django.core.management import call_command
+from django.urls import reverse
+from selenium.webdriver.common.by import By
+from ..base_page.base_page_locators import BasePageLocators
+
 
 class TestMenuPage(SriLankanDelightsTestCase):
-    pass
+
+    def setUp(self):
+        super().setUp()
+        self.load_sample_product()
+        url = self.live_server_url + reverse('menu')
+        self.browser.get(url)
+
+    def load_sample_product(self):
+        fixture = 'sample_product'  # ../fixtures/
+        call_command('loaddata', fixture)
+        print("Data Loaded!")
+
+    def test_add_product(self):
+
+        # add cart item by clicking the + icon
+        add_qty_button = self.browser.find_element(By.CLASS_NAME, 'add-quantity')
+        add_qty_button.click()
+
+        # verify that the cart has added one item
+        cart_checkout_element = self.browser.find_element(By.ID, BasePageLocators.CART_ITEM_CHECKOUT_ID)
+        self.assertTrue(cart_checkout_element.is_displayed())
+
+        cart_items = cart_checkout_element.find_element(By.ID, BasePageLocators.CART_ITEMS_ID)
+        self.assertEqual(int(cart_items.text), 1)
+
+        # add another cart item to verify
+        add_qty_button.click()
+        self.assertEqual(int(cart_items.text), 2)
+
