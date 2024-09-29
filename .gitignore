@@ -14,3 +14,4 @@ db.sqlite3
 /main/services/__pycache__/
 /main/templatetags/__pycache__/
 /main/static/main/images/menu/temp/
+/.coverage

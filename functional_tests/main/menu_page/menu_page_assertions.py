@@ -1,0 +1,2 @@
+class MenuPageAssertions:
+    TITLE = "Menu"

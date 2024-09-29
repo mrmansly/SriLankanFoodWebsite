@@ -1,0 +1,2 @@
+class CheckoutPageAssertions:
+    TITLE="Checkout"

@@ -12,7 +12,6 @@ export function updateCartItemDetails(quantity, product_id, instructions) {
             }, 0);
 
             updateCartItems(items);
-            toggleCartItemVisibility(items > 0);
             return data;
         });
 }

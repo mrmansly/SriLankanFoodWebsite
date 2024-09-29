@@ -1,0 +1,24 @@
+[
+  {
+    "model": "main.Classification",
+    "pk": 1,
+    "fields": {
+      "name": "classification1",
+      "description": "classification description 1",
+      "order": 3
+    }
+  },
+  {
+    "model": "main.Product",
+    "pk": 2,
+    "fields": {
+      "name": "product1",
+      "description": "description1",
+      "price": 15.6,
+      "classification": 1,
+      "active": true,
+      "chilli_level": 2,
+      "contains_peanuts": true
+    }
+  }
+]

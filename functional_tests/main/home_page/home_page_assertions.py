@@ -1,0 +1,2 @@
+class HomePageAssertions:
+    TITLE = "Home"

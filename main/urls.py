@@ -14,8 +14,7 @@ router.register(r'faq-list', FaqViewSet)
 
 urlpatterns = [
     path("", views.index_view, name="home"),
-    path("products/", views.products_view, name="products"),
-    path("cart/<int:cartId>", views.cart_view, name="cart"),
+    path("menu/", views.menu_view, name="menu"),
     path("checkout/", views.checkout_view, name="checkout"),
     path("about/", views.about_view, name="about"),
     path("order/", views.order_view, name="order"),

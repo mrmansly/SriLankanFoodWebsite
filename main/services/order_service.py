@@ -1,10 +1,25 @@
 from django.template.loader import render_to_string
 from ..models import Order, OrderProduct
 from . email_service import send_email
-from . price_service import get_all_price_data
+from . price_service import get_all_price_data, get_total_price
+from django.utils import timezone
 
 
-def create_order(order, cart):
+def save_checkout_form(form, cart) -> Order:
+    order = Order()
+    order.first_name = form.cleaned_data["first_name"]
+    order.last_name = form.cleaned_data["last_name"]
+    order.email = form.cleaned_data["email"]
+    order.mobile = form.cleaned_data["mobile"]
+    order.home_phone = form.cleaned_data["home_phone"]
+    order.created_date = timezone.now()
+
+    order.total_price = get_total_price(cart.cart_items.all())
+
+    return create_order(order, cart)
+
+
+def create_order(order, cart) -> Order:
 
     order.save()
 
@@ -28,7 +43,7 @@ def create_order(order, cart):
 def create_confirmation_body_html(order: Order):
 
     subject = 'Order Confirmation ' + str(order.id)
-    item_list = order.orderproduct_set.all()
+    item_list = order.order_products.all()
     html_content = render_to_string(
         'main/email-order-confirmation-template.html',
         {
@@ -45,7 +60,7 @@ def create_confirmation_body_html(order: Order):
 def create_confirmation_body_plain(order: Order):
 
     subject = 'Order Confirmation ' + str(order.id)
-    item_list = order.orderproduct_set.all()
+    item_list = order.order_products.all()
 
     txt_content = render_to_string(
         'main/email-order-confirmation-template.txt',
