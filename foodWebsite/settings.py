@@ -20,16 +20,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-cqj0h)q5s&dp8ixv(5)@+*4w5n_&ihv-@*+xfjo^ga9ca-(af6'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',')
 CSRF_TRUSTED_ORIGINS = os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',')
 
 # Expected value of dev_local (sqlite3 db), dev_cloud (RDS cloud db), prod (Production with RDS Cloud db)
 ENVIRONMENT = os.getenv('DJANGO_ENV', 'dev_local')  # Default to a 'dev_local' environment
+
+if ENVIRONMENT == 'prod':
+    # SECURITY WARNING: don't run with debug turned on in production!
+    DEBUG = False
+else:
+    DEBUG = True
+
 
 # Application definition
 
@@ -82,33 +86,23 @@ WSGI_APPLICATION = 'foodWebsite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-if ENVIRONMENT == 'prod':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'SLD_PROD', # os.getenv('DB_NAME'),  # e.g., 'myproject'
-            'USER': 'admin', # os.getenv('DB_USER'),  # e.g., 'username'
-            'PASSWORD': 'phb7HndPmhbGE1PA5nr9', # os.getenv('DB_PASSWORD'),  # e.g., 'password'
-            'HOST': 'sld-db.cf0u2ekiaxoj.ap-southeast-2.rds.amazonaws.com', # os.getenv('DB_HOST'),  # e.g., 'your-rds-endpoint.amazonaws.com'
-            'PORT': '3306'
-        }
-    }
-elif ENVIRONMENT == 'dev_cloud':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'SLD_DEV', # os.getenv('DB_NAME'),  # e.g., 'myproject'
-            'USER': 'admin', # os.getenv('DB_USER'),  # e.g., 'username'
-            'PASSWORD': 'phb7HndPmhbGE1PA5nr9', # os.getenv('DB_PASSWORD'),  # e.g., 'password'
-            'HOST': 'sld-db.cf0u2ekiaxoj.ap-southeast-2.rds.amazonaws.com', # os.getenv('DB_HOST'),  # e.g., 'your-rds-endpoint.amazonaws.com'
-            'PORT': '3306'
-        }
-    }
-elif ENVIRONMENT == 'dev_local':
+# other valid values 'prod', 'dev_cloud' and 'dev_local'
+if ENVIRONMENT == 'dev_local':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.getenv('DJANGO_DB_ENGINE'),
+            'NAME': os.getenv('DJANGO_DB_NAME'),
+            'USER': os.getenv('DJANGO_DB_USER'),
+            'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
+            'HOST': os.getenv('DJANGO_DB_HOST'),
+            'PORT': os.getenv('DJANGO_DB_PORT')
         }
     }
 
@@ -170,12 +164,12 @@ EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_HOST_PASSWORD')
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = EMAIL_SERVER_HOST # 'smtp.themessagingco.com.au'
-EMAIL_PORT = EMAIL_SERVER_PORT # 587
+EMAIL_HOST = EMAIL_SERVER_HOST
+EMAIL_PORT = EMAIL_SERVER_PORT
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = EMAIL_HOST_USER # 'mrmansly@iinet.net.au'
-EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD # 'Summer2022'
+EMAIL_HOST_USER = EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
