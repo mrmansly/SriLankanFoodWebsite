@@ -1,3 +1,3 @@
-class OrderDetailsPageAssertions:
+class OrderPageAssertions:
     TITLE="Order Details"
     
