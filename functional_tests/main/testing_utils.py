@@ -13,9 +13,9 @@ from selenium.webdriver.edge.options import Options as EdgeOptions
 def get_web_driver():
 
     web_driver = None
+    test_browser = os.environ.get("DJANGO_TEST_BROWSER")
 
-    if os.environ.get("DJANGO_TEST_BROWSER"):
-        test_browser = os.environ.get("DJANGO_TEST_BROWSER")
+    if test_browser:
         if test_browser == 'chrome':
             web_driver = get_chrome_driver()
         elif test_browser == 'firefox':
