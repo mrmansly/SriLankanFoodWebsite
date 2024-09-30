@@ -143,7 +143,12 @@ html, body {
   width: 100%;
 
   h1 {
+    line-height: normal;
     padding: 0 5rem 0 5rem;
+    background-image: linear-gradient(to right, $lankan-saffron 20%, $lankan-yellow, $lankan-saffron 80%);
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;  /* For webkit browsers */
+    background-clip: text;  /* for other browsers */
 
     @media (max-width: 450px) {
       padding: 0 2rem 0 2rem;
@@ -171,6 +176,11 @@ html, body {
   }
 }
 
+.warning-text {
+  color: $lankan-dark-red;
+  font-size: large;
+  font-weight: bold;
+}
 
 .product-item-row {
   padding-top: 10px;
