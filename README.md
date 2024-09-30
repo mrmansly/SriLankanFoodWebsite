@@ -1,3 +1,9 @@
+This is a side project I have developed to help with show casing my UI/UX skills and improve my skills in newer technologies.
+
+Feel free to access the URL and play around by making orders and leaving any feedback!
+
+The following notes are instructions for the EC2 deployment, which will soon be handled as part of a docker container.
+
 //Update the Ubuntu Image
 sudo apt-get update
 
