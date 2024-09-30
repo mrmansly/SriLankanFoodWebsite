@@ -1,6 +1,21 @@
 This is a side project I have developed to help with show casing my UI/UX skills and improve my skills in newer technologies.
+It is constantly evolving with the latest additions being Selenium functional tests.
 
-Feel free to access the URL and play around by making orders and leaving any feedback!
+Future Roadmap:
+- Docker Containerisation
+- User Account and Login process
+- Microservice Architecture
+- Serverless Architecture
+
+<p>
+Feel free to access the URL (http://3.107.102.106) and play around by making orders and leaving any feedback!<br>
+</p>
+<b>
+WARNING: The site is secured with a self signed certificate, allowing for https. However, as it is using a self signed certificate, you will get a warning as you 
+enter the site saying it is insecure. It is ok to proceed onto the beta website regardless. A proper CA certificate will be obtained for a production ready URL.
+</b>
+<br>
+<br>
 
 The following notes are instructions for the EC2 deployment, which will soon be handled as part of a docker container.
 
