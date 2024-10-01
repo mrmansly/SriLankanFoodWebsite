@@ -101,6 +101,10 @@ html, body {
   }
 }
 
+.faq-answer {
+  font-family: var(--bs-font-sans-serif), serif;
+}
+
 .header-image {
   position: absolute; /* position it absolutely within the row */
   left: 0; /* align it to the right */
@@ -130,6 +134,7 @@ html, body {
   border-radius: 15px;
 
   > h1, h2, h3, h4, h5, h6 {
+    display: inline-block;
     padding: 5px;
     --bs-text-opacity: 1;
     color: $lankan-saffron;
@@ -139,16 +144,18 @@ html, body {
 
 }
 
+.label-gradient {
+  background-image: linear-gradient(to right, $lankan-dark-red 20%, $lankan-saffron 40%, $lankan-yellow, $lankan-saffron 60%, $lankan-dark-red 80%);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;  /* For webkit browsers */
+  background-clip: text;  /* for other browsers */
+}
+
 .title-container {
-  width: 100%;
 
   h1 {
     line-height: normal;
     padding: 0 5rem 0 5rem;
-    background-image: linear-gradient(to right, $lankan-saffron 20%, $lankan-yellow, $lankan-saffron 80%);
-    -webkit-text-fill-color: transparent;
-    -webkit-background-clip: text;  /* For webkit browsers */
-    background-clip: text;  /* for other browsers */
 
     @media (max-width: 450px) {
       padding: 0 2rem 0 2rem;
