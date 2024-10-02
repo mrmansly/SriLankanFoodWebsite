@@ -4,18 +4,23 @@
 <script type="module">
 
     import {
-        addListenerForFormSubmit,
         incrementQuantityHandler,
         decrementQuantityHandler,
-        getProductItemForm,
-        setUpdateButtonDisabledStatus
-    } from '../../../static/main/js/product-item-row-utils.js';
-    import {addClickListener} from '../../../static/main/js/form-utils.js';
+        saveInstructionsHandler,
+        cancelInstructionsHandler,
+        prepareEditInstructionsHandler,
+        getQuantityValue
+    } from '../../../static/main/js/quantity-instruction-utils.js';
+    import {addClickListener} from '../../../static/main/js/product-item-listener-utils.js';
+
+    function getProductItemParentElement(productId) {
+        return document.getElementById("product-item-form-"+productId);
+    }
 
     function addListenersForQuantity(productId) {
-        const form = getProductItemForm(productId);
-        addClickListener(form, productId, "add-quantity", incrementQuantityHandler);
-        addClickListener(form, productId, "minus-quantity", decrementQuantityHandler);
+        const parentElement = getProductItemParentElement(productId);
+        addClickListener(parentElement, productId, "add-quantity", incrementQuantityHandler);
+        addClickListener(parentElement, productId, "minus-quantity", decrementQuantityHandler);
     }
 
     function openModalWithImage(imageSrc, title, description) {
@@ -32,33 +37,30 @@
         document.body.classList.add('no-cursor-change');
     }
 
-    function addListenersForFormChanges(productId) {
-        const form = getProductItemForm(productId);
-
-        form.addEventListener('input', () => {
-            setUpdateButtonDisabledStatus(form, false);
-        });
-    }
-
     function getImageLocation(image) {
         return '../../../static/main/images/menu/' + image;
     }
 
     function addListenersForImagePreview(productId, name, description, image) {
-        const form = getProductItemForm(productId);
-        const imageElement = form.getElementsByClassName('product-img')[0]
+        const parentElement = getProductItemParentElement(productId);
+        const imageElement = parentElement.getElementsByClassName('product-img')[0]
         const imageLocation = getImageLocation(image);
         imageElement.addEventListener('click', () => openModalWithImage(imageLocation, name, description));
     }
 
-    addListenerForFormSubmit({{ product.id }});
-    addListenersForFormChanges({{ product.id }});
     addListenersForQuantity({{ product.id }});
     addListenersForImagePreview({{ product.id }}, '{{ product.name }}', '{{ product.description }}', '{{ product.image }}');
 
-    const form = getProductItemForm({{ product.id }});
-    if (Number(form['quantity'].value) === 0) {
-        const minusQuantityElement = form.getElementsByClassName('minus-icon')[0];
+
+    const parentElement = getProductItemParentElement({{ product.id }});
+    const quantityElement = parentElement.querySelector('#quantity');
+
+    addClickListener(parentElement, {{ product.id }}, "edit-icon", prepareEditInstructionsHandler);
+    addClickListener(parentElement, {{ product.id }}, "save-icon", saveInstructionsHandler);
+    addClickListener(parentElement, {{ product.id }}, "cancel-icon", cancelInstructionsHandler);
+
+    if (getQuantityValue(parentElement) === 0) {
+        const minusQuantityElement = parentElement.getElementsByClassName('minus-icon')[0];
         minusQuantityElement.classList.add('quantity-button-disabled');
     }
 
@@ -108,21 +110,27 @@
                             <label class="product-price">${{ product.price|floatformat:2 }}</label>
                             <div class="product-quantity">
                                 <label for="quantity">Quantity</label>
-
-                                <input id="quantity" type="number" name="quantity" min="0"
-                                       class="form-control" value="{{ product.id|use_cart_item_quantity:cart }}">
-
                                 <i class="clickable-icon minus-quantity minus-icon fa-solid fa-circle-minus fs-5"></i>
+                                <p id="quantity">{{ product.id|use_cart_item_quantity:cart }}</p>
                                 <i class="clickable-icon add-quantity add-icon fa-solid fa-circle-plus fs-5"></i>
-
-                                <input type="hidden" name="product_id"
-                                       value="{{ product.id }}">
-                                <button type="submit" disabled class="update-button action-button btn btn-primary">Update</button>
                             </div>
-                            <div class="col-12 mt-2">
-                                <label for="instructions" class="align-top">Special Instructions</label>
-                                <textarea class="w-100" id="instructions"
-                                          name="instructions">{{ product.id|use_cart_item_instructions:cart }}</textarea>
+                            <div class="col-12 mt-2" id="{{ product.id }}-instructions-section">
+                                <div class="d-flex gap-2">
+                                    <label for="instructions" class="align-top small">Special Instructions</label>
+                                    <i class="clickable-icon edit-icon fa-regular fa-pen-to-square fs-5"  data-bs-toggle="tooltip" data-bs-placement="top" title="Special Instructions"></i>
+                                </div>
+                                <div class="read-only-instructions">
+                                    {{ product.id|use_cart_item_instructions:cart }}
+                                </div>
+                                <div class="edit-instructions gap-2 justify-content-between">
+                                    <label class="w-100">
+                                        <textarea id="instructions" name="instructions" class="form-control">{{ item.instructions }}</textarea>
+                                    </label>
+                                    <div class="d-flex flex-column gap-2 justify-content-center">
+                                        <i class="clickable-icon save-icon fa-solid fa-circle-check fs-5"></i>
+                                        <i class="clickable-icon cancel-icon fa-solid fa-circle-xmark fs-5"></i>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
