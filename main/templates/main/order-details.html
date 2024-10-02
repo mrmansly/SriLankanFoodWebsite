@@ -4,37 +4,36 @@
 <script type="module">
 
     import {
-        saveInstructionsHandler,
-        cancelInstructionsHandler,
         incrementQuantityHandler,
-        decrementQuantityHandler,
-        prepareEditInstructionsHandler,
-        getMinusIconElementFromForm
+        decrementQuantityHandler
     } from '../../static/main/js/order-details-utils.js';
 
-    import { addClickListener } from '../../static/main/js/form-utils.js';
+    import {
+        saveInstructionsHandler,
+        cancelInstructionsHandler,
+        prepareEditInstructionsHandler,
+        getMinusIconElement,
+        getQuantityValue
+    } from '../../static/main/js/quantity-instruction-utils.js';
+
+    import { addClickListener } from '../../static/main/js/product-item-listener-utils.js';
 
     // adding event listeners within javascript (rather than using onclick event in html tag) so that the
     // methods defined in the above ES6 module can be executed.
-    for (let instructionsForm of document.getElementsByClassName("instructions-form")) {
-        const product_id = instructionsForm.id.substring(0, instructionsForm.id.indexOf("-"));
-        addClickListener(instructionsForm, product_id, "edit-icon", prepareEditInstructionsHandler);
-        addClickListener(instructionsForm, product_id, "save-icon", saveInstructionsHandler);
-        addClickListener(instructionsForm, product_id, "cancel-icon", cancelInstructionsHandler);
-    }
+    for (let orderItem of document.getElementsByClassName("order-item-row")) {
+        const productId = orderItem.id.substring(0, orderItem.id.indexOf("-"));
 
-    for (let quantityForm of document.getElementsByClassName("quantity-form")) {
-        const product_id = quantityForm.id.substring(0, quantityForm.id.indexOf("-"));
+        addClickListener(orderItem, productId, "edit-icon", prepareEditInstructionsHandler);
+        addClickListener(orderItem, productId, "save-icon", saveInstructionsHandler);
+        addClickListener(orderItem, productId, "cancel-icon", cancelInstructionsHandler);
+        addClickListener(orderItem, productId, "add-quantity", incrementQuantityHandler);
+        addClickListener(orderItem, productId, "minus-quantity", decrementQuantityHandler);
 
-        if ( Number(quantityForm["quantity"].value) === 0) {
-            const minusIconElement = getMinusIconElementFromForm(quantityForm);
+        if ( getQuantityValue(orderItem) === 0) {
+            const minusIconElement = getMinusIconElement(orderItem);
             minusIconElement.classList.add("quantity-button-disabled")
         }
-
-        addClickListener(quantityForm, product_id, "add-quantity", incrementQuantityHandler);
-        addClickListener(quantityForm, product_id, "minus-quantity", decrementQuantityHandler);
     }
-
 
 </script>
 
@@ -56,48 +55,36 @@
         <tbody>
 
         {% for item in item_list %}
-            <tr id="{{ item.product_id }}-table-row" class="align-middle">
+            <tr id="{{ item.product_id }}-table-row" class="order-item-row align-middle">
                 <th scope="row">{{ forloop.counter }}</th>
-                <td>
-                    <form id="{{ item.product.id }}-instructions-form" class="instructions-form" method="post"
-                          action="#">
-                        {% csrf_token %}
-
+                <td id="{{ item.product.id }}-instructions-section">
                         <div class="d-flex justify-content-between">
                             <span>{{ item.product.name }}</span>
-                            <i class="clickable-icon edit-icon fa-regular fa-pen-to-square fs-5"></i>
+                            <i class="clickable-icon edit-icon fa-regular fa-pen-to-square fs-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Special Instructions"></i>
                         </div>
-                        <div class="instructions">
+                        <div class="read-only-instructions ps-3">
                             {{ item.instructions }}
                         </div>
                         <div class="edit-instructions gap-2 justify-content-between">
                             <label class="w-100">
-                                <textarea name="instructions" class="form-control">{{ item.instructions }}</textarea>
+                                <textarea id="instructions" class="form-control">{{ item.instructions }}</textarea>
                             </label>
                             <div class="d-flex flex-column gap-2 justify-content-center">
                                 <i class="clickable-icon save-icon fa-solid fa-circle-check fs-5"></i>
                                 <i class="clickable-icon cancel-icon fa-solid fa-circle-xmark fs-5"></i>
                             </div>
                         </div>
-                    </form>
                 </td>
-                <td>
-                    <form id="{{ item.product.id }}-quantity-form" class="quantity-form" method="post" action="#">
-                        {% csrf_token %}
+                <td id="{{ item.product.id }}-quantity-section">
                         {% if update_allowed %}
-                            <div class="d-flex gap-2 align-items-center">
-                                <input type="hidden" name="product_id" value="{{ item.product.id }}">
-                                <label>
-                                    <input type="number" name="quantity" class="form-control cart-quantity"
-                                           value="{{ item.quantity }}">
-                                </label>
+                            <div class="product-quantity">
                                 <i class="clickable-icon minus-quantity minus-icon fa-solid fa-circle-minus fs-5"></i>
+                                <p id="quantity">{{ item.quantity }}</p>
                                 <i class="clickable-icon add-quantity add-icon fa-solid fa-circle-plus fs-5"></i>
                             </div>
                         {% else %}
                             <div class="d-flex justify-content-end">{{ item.quantity }}</div>
                         {% endif %}
-                    </form>
                 </td>
                 <td id="unitPrice" class="text-end">${{ item.product.price|floatformat:2 }}</td>
                 <td id="extendedPrice" class="text-end">${{ item.quantity|multiply:item.product.price }}</td>

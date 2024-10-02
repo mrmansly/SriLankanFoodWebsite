@@ -58,7 +58,7 @@
                         <div>
                             {{ item.product.name }}
                         </div>
-                        {% if item.instructions is not None %}
+                        {% if item.instructions is not None and item.instructions != '' %}
                             <div style="font-size: 13px">
                                 &nbsp;&nbsp;* {{ item.instructions }}
                             </div>

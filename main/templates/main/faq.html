@@ -10,7 +10,7 @@
     </div>
     <div class="page-title-message">
         <p>This is the place to come for any questions you have</p>
-        <p>If there is something you need to know, please use the <a href="{% url 'contact' %}">Contact</a> page
+        <p>If there is something you need to know, please use the <a href="{% url 'contact' %}">contact</a> page
             to submit your question.</p>
     </div>
 
@@ -22,7 +22,7 @@
             {% for faq in faqs|filter_by_category:category.id %}
                 <div class="faq-item my-3 px-3 py-2">
                     <h5>{{ faq.question }}</h5>
-                    <p>{{ faq.answer }}</p>
+                    <pre class="faq-answer">{{ faq.answer }}</pre>
                 </div>
             {% endfor %}
         {% endfor %}

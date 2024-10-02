@@ -35,10 +35,12 @@
 
     <script type="text/javascript">
 
-        document.addEventListener("DOMContentLoaded", function () {
-            displayCartItemVisibility();
-            displayAcknowledgementOfCountry();
-        });
+        function initialiseTooltips() {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+        }
 
         function displayCartItemVisibility() {
             const cartItemElement = document.getElementById("cart-items");
@@ -85,6 +87,13 @@
                 sideNavElement.style.display = 'none';
             }
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            displayCartItemVisibility();
+            displayAcknowledgementOfCountry();
+            initialiseTooltips();
+        });
+
     </script>
 
     {% block head_content %}
@@ -102,7 +111,7 @@
         </div>
 
         <div class="title-container">
-            <h1 class="title">Sri Lankan Culinary Delights</h1>
+            <h1 class="title label-gradient">Sri Lankan Culinary Delights</h1>
         </div>
 
         <div id="cart-item-checkout" class="checkout row">
