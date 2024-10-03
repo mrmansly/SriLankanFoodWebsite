@@ -8,7 +8,7 @@
     </div>
     <table>
         <tr>
-            <td>Order #</td>
+            <td style="padding-right: 15px">Order #</td>
             <td>{{ order.id }}</td>
         </tr>
         <tr>
@@ -59,7 +59,7 @@
                             {{ item.product.name }}
                         </div>
                         {% if item.instructions is not None and item.instructions != '' %}
-                            <div style="font-size: 13px">
+                            <div style="font-size: smaller; font-style: italic">
                                 &nbsp;&nbsp;* {{ item.instructions }}
                             </div>
                         {% endif %}

@@ -1,5 +1,6 @@
 {% extends 'main/base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block head_content %}
     <script type="module">
@@ -16,7 +17,7 @@
     {% if item_list.exists %}
         <form method="post" class="form-container container" action="/checkout/">
             {%  csrf_token %}
-            {{ form.as_div }}
+            {{ form|crispy }}
             <div class="d-flex flex-row my-3 gap-2">
                 <button id="menu-button" type="button" class="action-button btn btn-primary">Back to Menu</button>
                 <button class="action-button btn btn-primary" name="form_type" value="checkout" type="submit">Confirm Order</button>

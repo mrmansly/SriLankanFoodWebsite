@@ -1,5 +1,6 @@
 {% extends 'main/base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block window_title %}Contact Us{% endblock %}
 {% block title %}Contact Us{% endblock %}
 
@@ -33,7 +34,7 @@
                 <form method="post" action="/contact/">
                     {% csrf_token %}
                     <div class="form-container container">
-                        {{ form.as_div }}
+                        {{ form | crispy }}
                     </div>
                     <button class="align-right action-button btn btn-primary my-3" type="submit">Submit Feedback</button>
                 </form>
