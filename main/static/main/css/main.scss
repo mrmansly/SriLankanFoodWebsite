@@ -638,3 +638,8 @@ input[type=number] {
   -moz-appearance: textfield;
   max-width: 50px;
 }
+
+.read-only-instructions {
+  font-style: italic;
+  font-size: smaller;
+}

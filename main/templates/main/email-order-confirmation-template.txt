@@ -21,4 +21,4 @@ Revised Sub Total: ${{ price_data.revised_net_cost|floatformat:2 }}{% endif %}
 GST (10%): ${{ price_data.gst|floatformat:2 }}
 Total: ${{ price_data.total_price|floatformat:2 }}
 
-Thank you for choosing our service!
+Thank you for choosing Sri Lankan Delights!
