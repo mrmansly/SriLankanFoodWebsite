@@ -1,0 +1,11 @@
+class CheckoutPageLocators:
+    ADD_QUANTITY_CLASSNAME = "add-quantity"
+    EDIT_ICON_CLASSNAME = "edit-icon"
+    ADD_ICON_CLASSNAME = "add-icon"
+    MINUS_ICON_CLASSNAME = "minus-icon"
+    FORM_FIRST_NAME = "first_name"
+    FORM_LAST_NAME = "last_name"
+    FORM_EMAIL = "email"
+    FORM_MOBILE = "mobile"
+    FORM_REQUESTED_DELIVERY_DATE = "requested_delivery_date"
+    CONFIRM_ORDER_BUTTON_ID = "confirm-order-button"

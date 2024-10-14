@@ -1,22 +1,18 @@
 from ..sri_lankan_delights_test_case import SriLankanDelightsTestCase
-from django.core.management import call_command
+
 from django.urls import reverse
 from selenium.webdriver.common.by import By
 from ..base_page.base_page_locators import BasePageLocators
+from ..menu_loader_utils import load_sample_product
 
 
 class TestMenuPage(SriLankanDelightsTestCase):
 
     def setUp(self):
         super().setUp()
-        self.load_sample_product()
+        load_sample_product()
         url = self.live_server_url + reverse('menu')
         self.browser.get(url)
-
-    def load_sample_product(self):
-        fixture = 'sample_product'  # ../fixtures/
-        call_command('loaddata', fixture)
-        print("Data Loaded!")
 
     def test_add_product(self):
 

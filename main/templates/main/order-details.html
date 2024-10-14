@@ -60,7 +60,9 @@
                 <td id="{{ item.product.id }}-instructions-section">
                         <div class="d-flex justify-content-between">
                             <span>{{ item.product.name }}</span>
-                            <i class="clickable-icon edit-icon fa-regular fa-pen-to-square fs-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Special Instructions"></i>
+                            {% if update_allowed %}
+                                <i class="clickable-icon edit-icon fa-regular fa-pen-to-square fs-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Special Instructions"></i>
+                            {% endif %}
                         </div>
                         <div class="read-only-instructions ps-3">
                             {{ item.instructions }}
