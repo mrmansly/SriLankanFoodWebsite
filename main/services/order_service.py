@@ -31,12 +31,17 @@ def create_order(order, cart) -> Order:
                                   instructions=cart_item.instructions)
         order_item.save()
 
-    # remove the cart after it has been converted to an order
+    # remove the cart after it has been converted to an order as no longer needed
     cart.delete()
 
     # notify the submitter via email
-    send_email(order.email, "Order Confirmation " + str(order.id),
-                            create_confirmation_body_html(order), create_confirmation_body_plain(order))
+    try:
+        send_email(order.email, "Order Confirmation " + str(order.id),
+                                create_confirmation_body_html(order), create_confirmation_body_plain(order))
+        order.confirmation_sent_date = timezone.now()
+        order.save()
+    except Exception as e:
+        print(f"Error sending email: {e}")
 
     return order
 
