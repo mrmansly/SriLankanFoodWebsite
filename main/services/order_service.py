@@ -12,6 +12,7 @@ def save_checkout_form(form, cart) -> Order:
     order.email = form.cleaned_data["email"]
     order.mobile = form.cleaned_data["mobile"]
     order.home_phone = form.cleaned_data["home_phone"]
+    order.requested_delivery_date = form.cleaned_data["requested_delivery_date"]
     order.created_date = timezone.now()
 
     order.total_price = get_total_price(cart.cart_items.all())
