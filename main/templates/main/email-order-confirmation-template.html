@@ -16,6 +16,10 @@
             <td>{{ order.created_date|date:"d F Y  H:i:s" }}</td>
         </tr>
         <tr>
+            <td style="padding-right: 15px">Requested Date</td>
+            <td>{{ order.requested_delivery_date|date:"d F Y  H:i" }}</td>
+        </tr>
+        <tr>
             <td>Order Name</td>
             <td>{{ order.last_name }}</td>
         </tr>
@@ -27,14 +31,14 @@
                 {% endif %}
             </td>
         </tr>
+        {% if order.home_phone is not None and order.home_phone != '' %}
         <tr>
             <td>Home Phone</td>
             <td>
-                {% if order.home_phone is not None %}
-                    {{ order.home_phone }}
-                {% endif %}
+                {{ order.home_phone }}
             </td>
         </tr>
+        {% endif %}
     </table>
 
     <div style="margin-top: 100px">

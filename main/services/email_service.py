@@ -17,6 +17,6 @@ def send_email(to_email, subject, html_content, plain_content):
     try:
         email.send()
     except Exception as e:
-        print(f"Error send email: {e}")
+        print(f"Error sending email: {e}")
 
 
