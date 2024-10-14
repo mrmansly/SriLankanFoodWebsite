@@ -53,7 +53,6 @@ def create_confirmation_body_html(order: Order):
             "price_data": get_all_price_data(item_list)}
     )
 
-    print(html_content)
     return html_content
 
 

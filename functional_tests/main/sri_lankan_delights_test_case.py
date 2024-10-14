@@ -12,7 +12,7 @@ class SriLankanDelightsTestCase(StaticLiveServerTestCase):
         self.browser = get_web_driver()
         self.browser.get(self.live_server_url)
         self.browser.set_page_load_timeout(10)
-        self.browser.implicitly_wait(10)
+        self.browser.implicitly_wait(1)
 
         # the display of this modal is governed by a local storage flag that is not retained for each test,
         # so explicitly close the modal and continue with the rest of the test.
