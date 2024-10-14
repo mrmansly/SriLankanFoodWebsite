@@ -83,6 +83,7 @@ class Order(models.Model):
     requested_delivery_date = models.DateTimeField(null=True, verbose_name="Delivery Date")
     created_date = models.DateTimeField(default=timezone.now)
     completed_date = models.DateTimeField(null=True)
+    confirmation_sent_date = models.DateTimeField(null=True)
 
     def __str__(self):
         return f"Order {self.id}: created on {self.created_date}"
