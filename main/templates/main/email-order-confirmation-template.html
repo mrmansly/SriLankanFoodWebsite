@@ -109,15 +109,16 @@
                 </tr>
             {% endif %}
 
-
-            <tr>
-                <th scope="row"></th>
-                <td></td>
-                <td></td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align:right">GST (10%)</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align:right">
-                    ${{ price_data.gst|floatformat:2 }}</td>
-            </tr>
+            {% if price_data.gst_enabled %}
+                <tr>
+                    <th scope="row"></th>
+                    <td></td>
+                    <td></td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align:right">GST (10%)</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align:right">
+                        ${{ price_data.gst|floatformat:2 }}</td>
+                </tr>
+            {% endif %}
 
             <tr>
                 <th scope="row"></th>

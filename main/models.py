@@ -179,3 +179,12 @@ class Contact(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class SystemPreference(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    type = models.CharField(max_length=50)
+    value = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f"{self.id} - {self.name}:{self.value}"

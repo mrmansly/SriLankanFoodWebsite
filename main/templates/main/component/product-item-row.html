@@ -13,14 +13,16 @@
     } from '../../../static/main/js/quantity-instruction-utils.js';
     import {addClickListener} from '../../../static/main/js/product-item-listener-utils.js';
 
+    const gstEnabled = JSON.parse(document.getElementById("gstEnabled").textContent);
+
     function getProductItemParentElement(productId) {
         return document.getElementById("product-item-form-"+productId);
     }
 
     function addListenersForQuantity(productId) {
         const parentElement = getProductItemParentElement(productId);
-        addClickListener(parentElement, productId, "add-quantity", incrementQuantityHandler);
-        addClickListener(parentElement, productId, "minus-quantity", decrementQuantityHandler);
+        addClickListener(parentElement, [productId, gstEnabled], "add-quantity", incrementQuantityHandler);
+        addClickListener(parentElement, [productId, gstEnabled], "minus-quantity", decrementQuantityHandler);
     }
 
     function openModalWithImage(imageSrc, title, description) {
@@ -51,13 +53,12 @@
     addListenersForQuantity({{ product.id }});
     addListenersForImagePreview({{ product.id }}, '{{ product.name }}', '{{ product.description }}', '{{ product.image }}');
 
-
     const parentElement = getProductItemParentElement({{ product.id }});
     const quantityElement = parentElement.querySelector('#quantity');
 
-    addClickListener(parentElement, {{ product.id }}, "edit-icon", prepareEditInstructionsHandler);
-    addClickListener(parentElement, {{ product.id }}, "save-icon", saveInstructionsHandler);
-    addClickListener(parentElement, {{ product.id }}, "cancel-icon", cancelInstructionsHandler);
+    addClickListener(parentElement, [{{ product.id }}], "edit-icon", prepareEditInstructionsHandler);
+    addClickListener(parentElement, [{{ product.id }}], "save-icon", saveInstructionsHandler);
+    addClickListener(parentElement, [{{ product.id }}], "cancel-icon", cancelInstructionsHandler);
 
     if (getQuantityValue(parentElement) === 0) {
         const minusQuantityElement = parentElement.getElementsByClassName('minus-icon')[0];
