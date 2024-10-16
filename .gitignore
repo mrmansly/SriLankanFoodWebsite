@@ -18,3 +18,4 @@ db.sqlite3
 .env.dev-local
 .env.dev-cloud
 .env.prod
+/originalImages/drive-download-20241016T092305Z-001.zip
