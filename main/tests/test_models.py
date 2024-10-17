@@ -4,7 +4,8 @@ from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 
 from main.models import (User, Classification, Product, Cart, CartItem, Order, \
-                         FaqCategory, Faq, OrderProduct, ContactType, Contact)
+                         FaqCategory, Faq, OrderProduct, ContactType, Contact, \
+                         SystemPreference)
 
 
 class TestModels(TestCase):
@@ -55,6 +56,12 @@ class TestModels(TestCase):
             question='question',
             answer='answer',
             category=self.faq_category1
+        )
+
+        self.system_preference = SystemPreference.objects.create(
+            name="preferenceName",
+            type="boolean",
+            value="True"
         )
 
     def test_user_unique_user_name(self):
@@ -337,3 +344,14 @@ class TestModels(TestCase):
                 answer='answer',
                 category=self.faq_category1
             )
+
+    def test_system_preference(self):
+        system_preference = SystemPreference.objects.get(name="preferenceName")
+        self.assertEqual(system_preference.value, 'True')
+        self.assertEqual(system_preference.type, 'boolean')
+
+    def test_system_preference_unique_name(self):
+        with self.assertRaises(IntegrityError):
+            SystemPreference.objects.create(name="preferenceName",
+                                            type="string",
+                                            value="anything")

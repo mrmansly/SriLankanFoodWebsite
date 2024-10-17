@@ -15,3 +15,6 @@ db.sqlite3
 /main/templatetags/__pycache__/
 /main/static/main/images/menu/temp/
 /.coverage
+.env.dev-local
+.env.dev-cloud
+.env.prod

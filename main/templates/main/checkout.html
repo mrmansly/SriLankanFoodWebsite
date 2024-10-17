@@ -3,10 +3,12 @@
 {% load crispy_forms_tags %}
 
 {% block head_content %}
+    {% if item_list.exists %}
     <script type="module">
         const menuButton = document.getElementById('menu-button');
         menuButton.addEventListener('click', () => window.location.href='{% url 'menu' %}' );
     </script>
+    {% endif %}
 {% endblock %}
 
 {% block window_title %}Checkout{% endblock %}

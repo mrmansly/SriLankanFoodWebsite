@@ -19,8 +19,8 @@ Price: ${{item.quantity|multiply:item.product.price}}
 -------------------------------------------------------------------------------------
 Sub Total: ${{ price_data.net_cost|floatformat:2 }}{% if price_data.discount > 0 %}
 Discount: - ${{ price_data.discount|floatformat:2 }}
-Revised Sub Total: ${{ price_data.revised_net_cost|floatformat:2 }}{% endif %}
-GST (10%): ${{ price_data.gst|floatformat:2 }}
+Revised Sub Total: ${{ price_data.revised_net_cost|floatformat:2 }}{% endif %}{% if price_data.gst_enabled %}
+GST (10%): ${{ price_data.gst|floatformat:2 }}{% endif %}
 Total: ${{ price_data.total_price|floatformat:2 }}
 
 Thank you for choosing Sri Lankan Delights!

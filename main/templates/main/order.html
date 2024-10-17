@@ -1,13 +1,15 @@
 {% extends 'main/base.html' %}
 
 {% block head_content %}
-    <script type="module">
-        const checkoutButton = document.getElementById('checkout-button');
-        checkoutButton.addEventListener('click', () => window.location.href='{% url 'checkout' %}' );
+    {% if item_list.exists %}
+        <script type="module">
+            const checkoutButton = document.getElementById('checkout-button');
+            checkoutButton.addEventListener('click', () => window.location.href = '{% url 'checkout' %}');
 
-        const menuButton = document.getElementById('menu-button');
-        menuButton.addEventListener('click', () => window.location.href='{% url 'menu' %}' );
-    </script>
+            const menuButton = document.getElementById('menu-button');
+            menuButton.addEventListener('click', () => window.location.href = '{% url 'menu' %}');
+        </script>
+    {% endif %}
 {% endblock %}
 
 {% block window_title %}Order Details{% endblock %}

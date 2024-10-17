@@ -13,3 +13,8 @@ class ContactNotificationTypeEnum(Enum):
     EMAIL = "EMAIL"
     MOBILE = "MOBILE"
     HOME_PHONE = "HOME_PHONE"
+
+
+class SystemPreferenceName(Enum):
+    GST_ENABLED = "gstEnabled"
+    GST_RATE = "gstRate"
