@@ -1,10 +1,16 @@
 from .system_preference_service import get_value, is_enabled
 from ..enums import SystemPreferenceName
 
-# NOTE: Requires a server restart if db changes occur impacting these values.
-GST_RATE = get_value(SystemPreferenceName.GST_RATE.value)
-GST_ENABLED = is_enabled(SystemPreferenceName.GST_ENABLED.value)
+# To be handled as a future task.  For now there is no discount functionality
 DEFAULT_DISCOUNT = 0
+
+
+def get_gst_rate():
+    return get_value(SystemPreferenceName.GST_RATE.value)
+
+
+def is_gst_enabled():
+    return is_enabled(SystemPreferenceName.GST_ENABLED.value)
 
 
 # Return the total price of the order (inclusive of GST and Discounts)
@@ -43,13 +49,13 @@ def get_gst(item_list):
 
     total_gst = 0
 
-    if GST_ENABLED:
+    if is_gst_enabled():
 
         if item_list is not None:
             net_price = get_net_cost(item_list)
 
             if net_price > 0:
-                total_gst = (net_price - get_discount()) / GST_RATE
+                total_gst = (net_price - get_discount()) / get_gst_rate()
 
     return total_gst
 
@@ -65,7 +71,7 @@ def get_all_price_data(item_list):
         "total_price": total_price,
         "net_cost": net_cost,
         "gst": gst,
-        "gst_enabled": GST_ENABLED,
+        "gst_enabled": is_gst_enabled(),
         "discount": discount,
         "revised_net_cost": revised_net_cost
     }
