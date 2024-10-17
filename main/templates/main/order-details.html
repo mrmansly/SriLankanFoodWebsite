@@ -1,6 +1,9 @@
 {% load static %}
 {% load custom_filters %}
 
+{{ price_data.gst_enabled|json_script:"gstEnabled" }}
+{{ update_allowed|json_script:"updateAllowed" }}
+
 <script type="module">
 
     import {
@@ -18,20 +21,25 @@
 
     import { addClickListener } from '../../static/main/js/product-item-listener-utils.js';
 
-    // adding event listeners within javascript (rather than using onclick event in html tag) so that the
-    // methods defined in the above ES6 module can be executed.
-    for (let orderItem of document.getElementsByClassName("order-item-row")) {
-        const productId = orderItem.id.substring(0, orderItem.id.indexOf("-"));
+    const gstEnabled = JSON.parse(document.getElementById("gstEnabled").textContent);
+    const updateAllowed = JSON.parse(document.getElementById("updateAllowed").textContent);
 
-        addClickListener(orderItem, productId, "edit-icon", prepareEditInstructionsHandler);
-        addClickListener(orderItem, productId, "save-icon", saveInstructionsHandler);
-        addClickListener(orderItem, productId, "cancel-icon", cancelInstructionsHandler);
-        addClickListener(orderItem, productId, "add-quantity", incrementQuantityHandler);
-        addClickListener(orderItem, productId, "minus-quantity", decrementQuantityHandler);
+    if (updateAllowed) {
+        // adding event listeners within javascript (rather than using onclick event in html tag) so that the
+        // methods defined in the above ES6 module can be executed.
+        for (let orderItem of document.getElementsByClassName("order-item-row")) {
+            const productId = orderItem.id.substring(0, orderItem.id.indexOf("-"));
 
-        if ( getQuantityValue(orderItem) === 0) {
-            const minusIconElement = getMinusIconElement(orderItem);
-            minusIconElement.classList.add("quantity-button-disabled")
+            addClickListener(orderItem, [productId], "edit-icon", prepareEditInstructionsHandler);
+            addClickListener(orderItem, [productId], "save-icon", saveInstructionsHandler);
+            addClickListener(orderItem, [productId], "cancel-icon", cancelInstructionsHandler);
+            addClickListener(orderItem, [productId, gstEnabled], "add-quantity", incrementQuantityHandler);
+            addClickListener(orderItem, [productId, gstEnabled], "minus-quantity", decrementQuantityHandler);
+
+            if ( getQuantityValue(orderItem) === 0) {
+                const minusIconElement = getMinusIconElement(orderItem);
+                minusIconElement.classList.add("quantity-button-disabled")
+            }
         }
     }
 
@@ -60,7 +68,9 @@
                 <td id="{{ item.product.id }}-instructions-section">
                         <div class="d-flex justify-content-between">
                             <span>{{ item.product.name }}</span>
-                            <i class="clickable-icon edit-icon fa-regular fa-pen-to-square fs-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Special Instructions"></i>
+                            {% if update_allowed %}
+                                <i class="clickable-icon edit-icon fa-regular fa-pen-to-square fs-5" data-bs-toggle="tooltip" data-bs-placement="top" title="Special Instructions"></i>
+                            {% endif %}
                         </div>
                         <div class="read-only-instructions ps-3">
                             {{ item.instructions }}
@@ -117,14 +127,15 @@
             </tr>
         {% endif %}
 
-
-        <tr>
-            <th scope="row"></th>
-            <td></td>
-            <td></td>
-            <td class="text-end">GST (10%)</td>
-            <td id="summaryGST" class="text-end">${{ price_data.gst|floatformat:2 }}</td>
-        </tr>
+        {% if price_data.gst_enabled %}
+            <tr>
+                <th scope="row"></th>
+                <td></td>
+                <td></td>
+                <td class="text-end">GST (10%)</td>
+                <td id="summaryGST" class="text-end">${{ price_data.gst|floatformat:2 }}</td>
+            </tr>
+        {% endif %}
 
         <tr>
             <th scope="row"></th>

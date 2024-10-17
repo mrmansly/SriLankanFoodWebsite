@@ -12,6 +12,7 @@ def save_checkout_form(form, cart) -> Order:
     order.email = form.cleaned_data["email"]
     order.mobile = form.cleaned_data["mobile"]
     order.home_phone = form.cleaned_data["home_phone"]
+    order.requested_delivery_date = form.cleaned_data["requested_delivery_date"]
     order.created_date = timezone.now()
 
     order.total_price = get_total_price(cart.cart_items.all())
@@ -30,12 +31,17 @@ def create_order(order, cart) -> Order:
                                   instructions=cart_item.instructions)
         order_item.save()
 
-    # remove the cart after it has been converted to an order
+    # remove the cart after it has been converted to an order as no longer needed
     cart.delete()
 
     # notify the submitter via email
-    send_email(order.email, "Order Confirmation " + str(order.id),
-                            create_confirmation_body_html(order), create_confirmation_body_plain(order))
+    try:
+        send_email(order.email, "Order Confirmation " + str(order.id),
+                                create_confirmation_body_html(order), create_confirmation_body_plain(order))
+        order.confirmation_sent_date = timezone.now()
+        order.save()
+    except Exception as e:
+        print(f"Error sending email: {e}")
 
     return order
 
@@ -53,7 +59,6 @@ def create_confirmation_body_html(order: Order):
             "price_data": get_all_price_data(item_list)}
     )
 
-    print(html_content)
     return html_content
 
 

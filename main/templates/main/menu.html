@@ -5,6 +5,8 @@
 
 {% block head_content %}
 
+    {{ price_data.gst_enabled|json_script:"gstEnabled" }}
+
     <script type="module">
 
         const classificationHeaders = document.getElementsByClassName("classification-name-label");

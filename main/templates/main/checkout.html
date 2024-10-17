@@ -3,10 +3,12 @@
 {% load crispy_forms_tags %}
 
 {% block head_content %}
+    {% if item_list.exists %}
     <script type="module">
         const menuButton = document.getElementById('menu-button');
         menuButton.addEventListener('click', () => window.location.href='{% url 'menu' %}' );
     </script>
+    {% endif %}
 {% endblock %}
 
 {% block window_title %}Checkout{% endblock %}
@@ -20,7 +22,7 @@
             {{ form|crispy }}
             <div class="d-flex flex-row my-3 gap-2">
                 <button id="menu-button" type="button" class="action-button btn btn-primary">Back to Menu</button>
-                <button class="action-button btn btn-primary" name="form_type" value="checkout" type="submit">Confirm Order</button>
+                <button id="confirm-order-button" class="action-button btn btn-primary" name="form_type" value="checkout" type="submit">Confirm Order</button>
             </div>
         </form>
 

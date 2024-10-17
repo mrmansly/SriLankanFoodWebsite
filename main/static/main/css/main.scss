@@ -103,6 +103,7 @@ html, body {
 
 .faq-answer {
   font-family: var(--bs-font-sans-serif), serif;
+  white-space: pre-wrap;
 }
 
 .header-image {
@@ -460,6 +461,7 @@ html, body {
 .border-top-double {
   border-top-width: 1px !important;
   border-top-style: double;
+  border-top-color: $lankan-dark-blue;
 }
 
 .border-top-double-2 {
@@ -469,7 +471,7 @@ html, body {
 
 .border-bottom-double {
   border-bottom: double 2px !important;
-  border-bottom-color: $lankan_black;
+  border-bottom-color: $lankan_dark-blue;
 }
 
 /* Modal Styles */
@@ -502,7 +504,6 @@ html, body {
   > div {
     background-color: $lankan-green;
     border-radius: 20px;
-    max-width: 600px;
   }
 
   h1 {

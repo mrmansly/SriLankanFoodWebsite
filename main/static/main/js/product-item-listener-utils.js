@@ -1,8 +1,8 @@
 // helper function for adding click listeners to order items and menu items.
-export function addClickListener(parentElement, productId, className, listenerFunction) {
+export function addClickListener(parentElement, params, className, listenerFunction) {
     const classElements = parentElement.getElementsByClassName(className);
     for (let element of classElements) {
-        element.addEventListener("click", () => listenerFunction(parentElement, productId));
+        element.addEventListener("click", () => listenerFunction(parentElement, ...params));
     }
 }
 

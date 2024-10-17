@@ -5,20 +5,22 @@ Please find below details of your confirmed order.
 
 Order#: {{ order.id }}
 Order Placed: {{ order.created_date|date:"d F Y  H:i:s" }}
+Requested Date: {{ order.requested_delivery_date|date:"d F Y  H:i" }}
 Order Name: {{ order.last_name }}
-Mobile: {% if order.mobile is not None %}{{ order.mobile }}{% endif %}
-Home Phone: {% if order.home_phone is not None %}{{ order.home_phone }}{% endif %}
+Mobile: {% if order.mobile is not None %}{{ order.mobile }}{% endif %}{% if order.home_phone is not None and order.home_phone != '' %}
+Home Phone: {{ order.home_phone }}{% endif %}
 -------------------------------------------------------------------------------------{% for item in item_list %}
-Item: {{item.product.name}}{% if item.instructions is not None %}
+Item: {{item.product.name}}{% if item.instructions is not None and item.instructions != '' %}
 Special Instructions: {{item.instructions}}{% endif %}
 Quantity: {{item.quantity}}
 Unit Price: ${{item.product.price|floatformat:2}}
-Price: ${{item.quantity|multiply:item.product.price}}{% endfor %}
+Price: ${{item.quantity|multiply:item.product.price}}
+{% endfor %}
 -------------------------------------------------------------------------------------
 Sub Total: ${{ price_data.net_cost|floatformat:2 }}{% if price_data.discount > 0 %}
 Discount: - ${{ price_data.discount|floatformat:2 }}
-Revised Sub Total: ${{ price_data.revised_net_cost|floatformat:2 }}{% endif %}
-GST (10%): ${{ price_data.gst|floatformat:2 }}
+Revised Sub Total: ${{ price_data.revised_net_cost|floatformat:2 }}{% endif %}{% if price_data.gst_enabled %}
+GST (10%): ${{ price_data.gst|floatformat:2 }}{% endif %}
 Total: ${{ price_data.total_price|floatformat:2 }}
 
 Thank you for choosing Sri Lankan Delights!
