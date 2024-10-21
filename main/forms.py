@@ -2,6 +2,28 @@ from django import forms
 from .models import Order, Contact, Product
 
 
+def get_mobile_form_field():
+    return forms.TextInput(
+        attrs={
+            'type': 'tel',
+            # allow spaces in mobile
+            'pattern': '^(04\\d{2}\\s?\\d{3}\\s?\\d{3}|\\+61\\s?4\\d{2}\\s?\\d{3}\\s?\\d{3})$',
+            'placeholder': '+614XXXXXXXX'
+        }
+    )
+
+
+def get_home_phone_form_field():
+    return forms.TextInput(
+        attrs={
+            'type': 'tel',
+            # allow spaces in landline
+            'pattern': '^0[2378]\\s?\\d{4}\\s?\\d{4}$',
+            'placeholder': '08XXXXXXXX'
+        }
+    )
+
+
 class ModelFormWithClassMixin(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -19,7 +41,9 @@ class CheckoutForm(ModelFormWithClassMixin, forms.ModelForm):
         model = Order
         fields = ['first_name', 'last_name', 'email', 'mobile', 'home_phone', 'requested_delivery_date']
         widgets = {
-            'requested_delivery_date': forms.DateTimeInput(attrs={'type': 'datetime-local'})
+            'requested_delivery_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'mobile': get_mobile_form_field(),
+            'home_phone': get_home_phone_form_field()
         }
 
 
@@ -37,6 +61,8 @@ class ContactForm(ModelFormWithClassMixin, forms.ModelForm):
             'type': forms.Select(),
             'preferred_contact': forms.Select(),
             'rating': forms.Select(),
+            'mobile': get_mobile_form_field(),
+            'home_phone': get_home_phone_form_field()
         }
 
     def __init__(self, *args, **kwargs):

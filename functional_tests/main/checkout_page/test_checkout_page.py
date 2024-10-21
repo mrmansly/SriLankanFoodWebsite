@@ -3,12 +3,12 @@ from django.urls import reverse
 from ..menu_loader_utils import load_sample_product
 from selenium.webdriver.common.by import By
 from .checkout_page_locators import CheckoutPageLocators
+from ..sri_lankan_delights_test_case import create_gst_preferences
 
 
 class TestCheckoutPage(SriLankanDelightsTestCase):
 
     def create_dummy_order(self):
-        load_sample_product()
         url = self.live_server_url + reverse('menu')
         self.browser.get(url)
 
@@ -18,12 +18,14 @@ class TestCheckoutPage(SriLankanDelightsTestCase):
 
     def setUp(self):
         super().setUp()
+        create_gst_preferences()
+        load_sample_product()
         self.create_dummy_order()
-
         url = self.live_server_url + reverse('checkout')
         self.browser.get(url)
 
     def test_edit_functions_visible(self):
+
         # verify that the edit instructions and edit quantity buttons are not visible.
         edit_instructions_icon = self.browser.find_element(By.CLASS_NAME, CheckoutPageLocators.EDIT_ICON_CLASSNAME)
         self.assertTrue(edit_instructions_icon.is_displayed())
@@ -36,6 +38,7 @@ class TestCheckoutPage(SriLankanDelightsTestCase):
 
     # Helper method to add details to the checkout form
     def add_complete_checkout_details(self):
+
         first_name = self.browser.find_element(By.NAME, CheckoutPageLocators.FORM_FIRST_NAME)
         first_name.send_keys('Graeme')
 

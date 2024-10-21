@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.test import TestCase
 from unittest.mock import patch
 from django.db import IntegrityError
@@ -38,8 +39,10 @@ class TestModels(TestCase):
         self.order1 = Order.objects.create(
             first_name='First',
             last_name='Last',
-            email='email',
-            total_price=100
+            email='email@email.com',
+            total_price=100,
+            mobile='0418502729',
+            requested_delivery_date=timezone.now()
         )
 
         self.contact_type1 = ContactType.objects.create(

@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from .enums import ContactNotificationTypeEnum, ContactTypeEnum
 from django.core.exceptions import ValidationError
+from .services.phone_validation_service import validate_mobile, validate_landline
 
 
 # Create your models here.
@@ -82,11 +83,20 @@ class Order(models.Model):
     total_price = models.FloatField()
     requested_delivery_date = models.DateTimeField(null=True, verbose_name="Delivery Date")
     created_date = models.DateTimeField(default=timezone.now)
-    completed_date = models.DateTimeField(null=True)
-    confirmation_sent_date = models.DateTimeField(null=True)
+    completed_date = models.DateTimeField(null=True, blank=True)
+    confirmation_sent_date = models.DateTimeField(null=True, blank=True, db_index=True)
+    cancelled_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"Order {self.id}: created on {self.created_date}"
+
+    def clean(self):
+        self.mobile = validate_mobile(self.mobile)
+        self.home_phone = validate_landline(self.home_phone)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class OrderProduct(models.Model):
@@ -175,6 +185,9 @@ class Contact(models.Model):
 
         if self.type_id == ContactTypeEnum.REVIEW.value and self.rating is None:
             raise ValidationError('A rating is required when submitting a Food Review')
+
+        self.mobile = validate_mobile(self.mobile)
+        self.home_phone = validate_landline(self.home_phone)
 
     def save(self, *args, **kwargs):
         self.full_clean()
