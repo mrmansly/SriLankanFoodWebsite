@@ -49,7 +49,17 @@ def checkout_view(request):
                     "price_data": get_all_price_data(item_list)
                 })
             else:
-                raise ValidationError("Form is invalid!")
+                session_id = get_session_id(request)
+                cart = get_cart(session_id)
+                item_list = cart.cart_items.all()
+
+                # if the form contains errors this will be returned in the context below and displayed on screen
+                return render(request, "main/checkout.html",
+                          {
+                              "form": form,
+                              "item_list": item_list,
+                              "update_allowed": True,
+                              "price_data": get_all_price_data(item_list)})
 
     else:
         form = CheckoutForm()

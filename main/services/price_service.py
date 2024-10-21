@@ -18,7 +18,7 @@ def is_gst_enabled():
 def get_total_price(item_list):
     total_price = 0
 
-    if item_list is not None:
+    if item_list:
         net_price = get_net_cost(item_list)
         total_gst = get_gst(item_list)
         total_discount = get_discount()
@@ -36,7 +36,7 @@ def get_discount():
 def get_net_cost(item_list):
     net_price = 0
 
-    if item_list is not None:
+    if item_list:
         for item in item_list:
             net_price += item.quantity * item.product.price
 
@@ -49,13 +49,12 @@ def get_gst(item_list):
 
     total_gst = 0
 
-    if is_gst_enabled():
+    if item_list and is_gst_enabled():
 
-        if item_list is not None:
-            net_price = get_net_cost(item_list)
+        net_price = get_net_cost(item_list)
 
-            if net_price > 0:
-                total_gst = (net_price - get_discount()) / get_gst_rate()
+        if net_price > 0:
+            total_gst = (net_price - get_discount()) / get_gst_rate()
 
     return total_gst
 
@@ -67,11 +66,12 @@ def get_all_price_data(item_list):
     gst = get_gst(item_list)
     discount = get_discount()
     revised_net_cost = net_cost - discount
+    gst_enabled = is_gst_enabled()
     return {
         "total_price": total_price,
         "net_cost": net_cost,
         "gst": gst,
-        "gst_enabled": is_gst_enabled(),
+        "gst_enabled": gst_enabled,
         "discount": discount,
         "revised_net_cost": revised_net_cost
     }

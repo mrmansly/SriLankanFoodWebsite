@@ -186,8 +186,11 @@ html, body {
 
 .warning-text {
   color: $lankan-dark-red;
-  font-size: large;
-  font-weight: bold;
+  background-color: lighten($lankan-yellow, 20%);
+  border-radius: 15px;
+  padding: 1rem;
+  font-size: smaller;
+  margin-bottom: 1rem;
 }
 
 .product-item-row {
@@ -417,7 +420,7 @@ html, body {
   gap: 20px;
   justify-content: space-between;
   background: linear-gradient(to right, $lankan-saffron, $lankan-yellow, $lankan-saffron);
-  border-radius: 10px;
+  border-radius: 15px;
   padding: 0 20px 0 20px;
   height: 40px;
   margin-bottom: 30px;
