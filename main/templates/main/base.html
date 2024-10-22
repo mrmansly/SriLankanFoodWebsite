@@ -110,9 +110,21 @@
             <img src="{% static 'images/sri_lanka_flag.png' %}" alt="Sri Lanka Flag">
         </div>
 
+        {% if product_stock %}
+            <div class="flashing-text">
+                <a class="ignore-a-styling lamprais-banner" href="{% url 'menu' %}#Specialty">Lamprais In Stock</a>
+            </div>
+        {% endif %}
+
         <div class="title-container">
             <h1 class="title label-gradient">SRI LANKAN DELIGHTS</h1>
         </div>
+
+        {% if product_stock %}
+            <div class="flashing-text">
+                <a class="ignore-a-styling lamprais-banner" href="{% url 'menu' %}#Specialty">Lamprais In Stock</a>
+            </div>
+        {% endif %}
 
         <div id="cart-item-checkout" class="checkout row">
             <div class="col col-12 col-md-6 text-center">
@@ -121,7 +133,9 @@
                 </a>
             </div>
             <div class="col col-12 col-md-6 text-center">
-                <span id="cart-items">{{ cart_items }}</span><span class="items-label">&nbsp;Items</span>
+                <a class="ignore-a-styling" href="{% url 'checkout' %}">
+                    <span id="cart-items">{{ cart_items }}</span><span class="items-label">&nbsp;Items</span>
+                </a>
             </div>
         </div>
 
@@ -130,6 +144,8 @@
     <div class="main-container">
 
         <div id="sidenav" class="sidebar">
+
+            {% include 'main/component/lamprais_available.html' %}
             <a id="sidenav-home" href="{% url 'home' %}">Home</a>
             <a id="sidenav-menu" href="{% url 'menu' %}">Menu</a>
             <a id="sidenav-order-details" href="{% url 'order' %}">Order</a>

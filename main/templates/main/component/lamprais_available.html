@@ -1,0 +1,21 @@
+{% load static %}
+
+{% if product_stock %}
+    <a id="lamprais-available" href="{% url 'menu' %}#Specialty">
+        <svg width="90" height="90" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <path id="circlePath" d="M 50,50 m -25,0 a 25,25 0 1,1 50,0 a 25,25 0 1,1 -50,0" ></path>
+            </defs>
+
+            <!-- Place the image in the center of the SVG -->
+            <image href="{% static 'images/lamprais_packet.png' %}" x="5" y="10" width="80" height="80" ></image>
+
+            <!-- Text along the circular path -->
+            <text class="rotating-text">
+                <textPath href="#circlePath" id="rotatingText">
+                    In Stock
+                </textPath>
+            </text>
+        </svg>
+    </a>
+{% endif %}

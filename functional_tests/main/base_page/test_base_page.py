@@ -1,6 +1,7 @@
 import time
 
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 from .base_page_locators import BasePageLocators as Locators
 from django.urls import reverse
 from django.test import override_settings
@@ -27,8 +28,8 @@ class TestBasePage(SriLankanDelightsTestCase):
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
-                # Use this mocked context to avoid session specific dependencies
-                'functional_tests.main.base_page.mock_context_processor.mocked_cart_context',
+                # Use this mocked context to avoid session specific and database dependencies
+                'functional_tests.main.base_page.mock_context_processor.mocked_cart_context'
             ],
         }
     }])
@@ -48,6 +49,7 @@ class TestBasePage(SriLankanDelightsTestCase):
             self.assertEqual(self.browser.title, title_assertion)
         except Exception as e:
             print("Exception is: " + str(e))
+            raise e
 
     def test_sidenav_home_navigation(self):
         self.nav_test_for("sidenav-home", HomePageAssertions.TITLE)
@@ -67,6 +69,53 @@ class TestBasePage(SriLankanDelightsTestCase):
     def test_sidenav_order_details_navigation(self):
         add_gst_enabled_entry(True)
         self.nav_test_for("sidenav-order-details", OrderPageAssertions.TITLE)
+
+    @override_settings(TEMPLATES=[{
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.request',
+                # Use this mocked context to avoid session specific and database dependencies
+                'functional_tests.main.base_page.mock_context_processor.mocked_product_stock_context'
+            ],
+        }
+    }])
+    def test_sidenav_lamprais_available_navigation(self):
+        self.nav_test_for(Locators.LAMPRAIS_AVAILABLE_ID, MenuPageAssertions.TITLE)
+
+    @override_settings(TEMPLATES=[{
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.request',
+                # Use this mocked context to avoid session specific and database dependencies
+                'functional_tests.main.base_page.mock_context_processor.mocked_product_stock_context'
+            ],
+        }
+    }])
+    def test_title_banner_when_lamprais_available_navigation(self):
+        self.browser.get(self.live_server_url)
+        elements = self.browser.find_elements(By.CLASS_NAME, Locators.LAMPRAIS_BANNER_CLASSNAME)
+        elements[0].click()
+        self.assertEqual(self.browser.title, MenuPageAssertions.TITLE)
+
+    def test_title_banner_when_lamprais_not_available(self):
+        self.browser.get(self.live_server_url)
+        elements = self.browser.find_elements(By.CLASS_NAME, Locators.LAMPRAIS_BANNER_CLASSNAME)
+        self.assertEqual(len(elements), 0)
+
+    def test_sidenav_lamprais_available_when_no_stock(self):
+        self.browser.get(self.live_server_url)
+
+        try:
+            self.browser.find_element(By.ID, Locators.LAMPRAIS_AVAILABLE_ID)
+            self.fail('Element found in DOM when not expected')
+        except NoSuchElementException:
+            pass
 
     def test_footer_home_navigation(self):
         self.nav_test_for("footer-home", HomePageAssertions.TITLE)

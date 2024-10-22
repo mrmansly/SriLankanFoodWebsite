@@ -1,4 +1,6 @@
-from main.models import Cart
+from main.models import Cart, ProductStock
+
+LAMPRAIS_PRODUCT_NAME = "Lamprais"
 
 
 def cart_context(request):
@@ -27,3 +29,10 @@ def get_cart_items(cart: Cart):
 
     return count
 
+
+# Retrieve product stock that is currently available
+# For now we are only concentrating on lamprais.
+def product_stock_context(request):
+    return {
+        'product_stock': ProductStock.objects.filter(quantity__gt=0, product__name=LAMPRAIS_PRODUCT_NAME)
+    }
