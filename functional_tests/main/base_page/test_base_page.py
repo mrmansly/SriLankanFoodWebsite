@@ -29,8 +29,7 @@ class TestBasePage(SriLankanDelightsTestCase):
             'context_processors': [
                 'django.template.context_processors.request',
                 # Use this mocked context to avoid session specific and database dependencies
-                'functional_tests.main.base_page.mock_context_processor.mocked_cart_context',
-                'functional_tests.main.base_page.mock_context_processor.mocked_product_stock_context'
+                'functional_tests.main.base_page.mock_context_processor.mocked_cart_context'
             ],
         }
     }])
