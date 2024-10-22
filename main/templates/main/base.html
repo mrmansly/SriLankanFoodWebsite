@@ -130,6 +130,8 @@
     <div class="main-container">
 
         <div id="sidenav" class="sidebar">
+
+            {% include 'main/component/lamprais_available.html' %}
             <a id="sidenav-home" href="{% url 'home' %}">Home</a>
             <a id="sidenav-menu" href="{% url 'menu' %}">Menu</a>
             <a id="sidenav-order-details" href="{% url 'order' %}">Order</a>

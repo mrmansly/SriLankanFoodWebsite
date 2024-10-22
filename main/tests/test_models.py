@@ -4,9 +4,9 @@ from unittest.mock import patch
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 
-from main.models import (User, Classification, Product, Cart, CartItem, Order, \
-                         FaqCategory, Faq, OrderProduct, ContactType, Contact, \
-                         SystemPreference)
+from main.models import (User, Classification, Product, Cart, CartItem, Order,
+                         FaqCategory, Faq, OrderProduct, ContactType, Contact,
+                         SystemPreference, ProductStock)
 
 
 class TestModels(TestCase):
@@ -34,6 +34,11 @@ class TestModels(TestCase):
             description='description',
             price=10.4,
             classification=self.classification1
+        )
+
+        self.product1Stock = ProductStock.objects.create(
+            product=self.product1,
+            quantity=1
         )
 
         self.order1 = Order.objects.create(
@@ -358,3 +363,11 @@ class TestModels(TestCase):
             SystemPreference.objects.create(name="preferenceName",
                                             type="string",
                                             value="anything")
+
+    def test_product_stock(self):
+        product_stock = ProductStock.objects.get(product_id=self.product1.id)
+        self.assertEqual(product_stock.quantity, self.product1Stock.quantity)
+
+    def test_product_stock_duplicate(self):
+        with self.assertRaises(IntegrityError):
+            ProductStock.objects.create(product_id=self.product1.id, quantity=1)

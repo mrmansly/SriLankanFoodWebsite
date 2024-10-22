@@ -109,6 +109,15 @@ class OrderProduct(models.Model):
         return f"{self.quantity} item(s) of {self.product.name} belonging to Order {self.order.id}"
 
 
+class ProductStock(models.Model):
+    product = models.OneToOneField(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.quantity} item(s) of {self.product.name} currently in stock"
+
+
 class FaqCategory(models.Model):
     category = models.CharField(max_length=50, unique=True)
     description = models.CharField(max_length=200)

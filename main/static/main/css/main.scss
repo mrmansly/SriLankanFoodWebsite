@@ -647,3 +647,20 @@ input[type=number] {
   font-style: italic;
   font-size: smaller;
 }
+
+.rotating-text {
+  fill: $lankan-saffron;
+  font-weight: 500;
+  font-size: smaller;
+  transform-origin: 50% 50%;
+  animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}
