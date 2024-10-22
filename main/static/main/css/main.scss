@@ -156,9 +156,9 @@ html, body {
 
   h1 {
     line-height: normal;
-    padding: 0 5rem 0 5rem;
+    padding: 0 2rem 0 2rem;
 
-    @media (max-width: 450px) {
+    @media (max-width: 460px) {
       padding: 0 2rem 0 2rem;
     }
   }
@@ -605,6 +605,31 @@ html, body {
 .navigation-icon {
   color: $lankan_saffron;
   cursor: pointer;
+}
+
+.flashing-text {
+  color: $lankan_saffron;
+  animation: flash 2s infinite;
+
+  @media (max-width: 992px) {
+    display: none;
+  }
+
+}
+
+.ignore-a-styling {
+  text-decoration: unset;
+  color: unset;
+
+  &:hover {
+    color: unset;
+  }
+}
+
+@keyframes flash {
+  0% { color: $lankan_saffron; }
+  50% { color: $lankan_yellow; }
+  100% { color: $lankan_saffron; }
 }
 
 .article-first-paragraph {

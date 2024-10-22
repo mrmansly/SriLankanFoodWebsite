@@ -84,13 +84,36 @@ class TestBasePage(SriLankanDelightsTestCase):
         }
     }])
     def test_sidenav_lamprais_available_navigation(self):
-        self.nav_test_for('lamprais-available', MenuPageAssertions.TITLE)
+        self.nav_test_for(Locators.LAMPRAIS_AVAILABLE_ID, MenuPageAssertions.TITLE)
+
+    @override_settings(TEMPLATES=[{
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.request',
+                # Use this mocked context to avoid session specific and database dependencies
+                'functional_tests.main.base_page.mock_context_processor.mocked_product_stock_context'
+            ],
+        }
+    }])
+    def test_title_banner_when_lamprais_available_navigation(self):
+        self.browser.get(self.live_server_url)
+        elements = self.browser.find_elements(By.CLASS_NAME, Locators.LAMPRAIS_BANNER_CLASSNAME)
+        elements[0].click()
+        self.assertEqual(self.browser.title, MenuPageAssertions.TITLE)
+
+    def test_title_banner_when_lamprais_not_available(self):
+        self.browser.get(self.live_server_url)
+        elements = self.browser.find_elements(By.CLASS_NAME, Locators.LAMPRAIS_BANNER_CLASSNAME)
+        self.assertEqual(len(elements), 0)
 
     def test_sidenav_lamprais_available_when_no_stock(self):
         self.browser.get(self.live_server_url)
 
         try:
-            self.browser.find_element(By.ID, 'lamprais-available')
+            self.browser.find_element(By.ID, Locators.LAMPRAIS_AVAILABLE_ID)
             self.fail('Element found in DOM when not expected')
         except NoSuchElementException:
             pass
