@@ -11,9 +11,7 @@
         const menuButton = document.getElementById('menu-button');
         menuButton.addEventListener('click', () => window.location.href='{% url 'menu' %}' );
 
-        function getEarliestValidDate() {
-            const now = new Date();
-
+        function getEarliestValidDate(now) {
             let minutes = now.getMinutes();
             let hours = now.getHours();
 
@@ -30,7 +28,8 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const datetimeField = document.querySelector(".future-datetime-picker");
-            const earliestValidDate = getEarliestValidDate(datetimeField);
+            const now = new Date();
+            const earliestValidDate = getEarliestValidDate(now);
             datetimeField.min = earliestValidDate;
             datetimeField.value = earliestValidDate;
 
