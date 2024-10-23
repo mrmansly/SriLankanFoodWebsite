@@ -93,10 +93,16 @@ class Order(models.Model):
     def clean(self):
         self.mobile = validate_mobile(self.mobile)
         self.home_phone = validate_landline(self.home_phone)
+        self.validate_requested_delivery_date()
 
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+    # validate that the requested delivery date is a future date
+    def validate_requested_delivery_date(self):
+        if self.requested_delivery_date < timezone.now():
+            raise ValidationError("Requested Delivery Date must be a future date.")
 
 
 class OrderProduct(models.Model):

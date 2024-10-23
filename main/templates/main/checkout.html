@@ -5,8 +5,46 @@
 {% block head_content %}
     {% if item_list.exists %}
     <script type="module">
+
+        import {isValidDate} from '../../static/main/js/date-utils.js';
+
         const menuButton = document.getElementById('menu-button');
         menuButton.addEventListener('click', () => window.location.href='{% url 'menu' %}' );
+
+        function getEarliestValidDate() {
+            const now = new Date();
+
+            let minutes = now.getMinutes();
+            let hours = now.getHours();
+
+            if (minutes > 0 && minutes <= 30) {
+                minutes = 30;
+            } else if (minutes >= 30) {
+                minutes = 0;
+                hours = hours + 1;
+            }
+
+            return now.getFullYear() + '-' + (now.getMonth()+1) + '-' + now.getDate() + 'T' +
+                hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const datetimeField = document.querySelector(".future-datetime-picker");
+            const earliestValidDate = getEarliestValidDate(datetimeField);
+            datetimeField.min = earliestValidDate;
+            datetimeField.value = earliestValidDate;
+
+            // Add event listener to check if the selected date/time is valid
+            datetimeField.addEventListener('change', function() {
+                const selectedDateTime = new Date(datetimeField.value);
+
+                if ( !isValidDate(selectedDateTime) || selectedDateTime < now) {
+                    // Reset to the minimum allowed date if invalid OR even if the Clear button is selected in the date picker
+                    datetimeField.value = datetimeField.min;
+                }
+            });
+
+        })
     </script>
     {% endif %}
 {% endblock %}
