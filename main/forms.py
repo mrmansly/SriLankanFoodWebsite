@@ -41,7 +41,13 @@ class CheckoutForm(ModelFormWithClassMixin, forms.ModelForm):
         model = Order
         fields = ['first_name', 'last_name', 'email', 'mobile', 'home_phone', 'requested_delivery_date']
         widgets = {
-            'requested_delivery_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'requested_delivery_date': forms.DateTimeInput(attrs={
+                    'class': 'future-datetime-picker',
+                    'type': 'datetime-local',
+                    'step': 1800,  # 1800 seconds = 30 mins (30 min step increments)
+                },
+                format='%d-%m-%YT%H:%M'  # exclude seconds
+            ),
             'mobile': get_mobile_form_field(),
             'home_phone': get_home_phone_form_field()
         }

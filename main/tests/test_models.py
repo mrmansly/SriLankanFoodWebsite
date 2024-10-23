@@ -3,6 +3,7 @@ from django.test import TestCase
 from unittest.mock import patch
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
+from datetime import timedelta
 
 from main.models import (User, Classification, Product, Cart, CartItem, Order,
                          FaqCategory, Faq, OrderProduct, ContactType, Contact,
@@ -47,7 +48,7 @@ class TestModels(TestCase):
             email='email@email.com',
             total_price=100,
             mobile='0418502729',
-            requested_delivery_date=timezone.now()
+            requested_delivery_date=timezone.now() + timedelta(days=1)
         )
 
         self.contact_type1 = ContactType.objects.create(
@@ -371,3 +372,14 @@ class TestModels(TestCase):
     def test_product_stock_duplicate(self):
         with self.assertRaises(IntegrityError):
             ProductStock.objects.create(product_id=self.product1.id, quantity=1)
+
+    def test_order_with_past_date(self):
+        with self.assertRaises(ValidationError):
+            Order.objects.create(
+                first_name='First',
+                last_name='Last',
+                email='email@email.com',
+                total_price=100,
+                mobile='0418502729',
+                requested_delivery_date=timezone.now() + timedelta(days=-10)
+            )
