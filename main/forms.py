@@ -45,7 +45,6 @@ class CheckoutForm(ModelFormWithClassMixin, forms.ModelForm):
                     'class': 'future-datetime-picker',
                     'type': 'datetime-local',
                     'step': 1800,  # 1800 seconds = 30 mins (30 min step increments)
-                    # 'min': timezone.now().strftime('%d-%m-%YT%H:%M')
                 },
                 format='%d-%m-%YT%H:%M'  # exclude seconds
             ),
