@@ -1,8 +1,9 @@
 from django.template.loader import render_to_string
 from ..models import Order, OrderProduct
-from . email_service import send_email
-from . price_service import get_all_price_data, get_total_price
+from .email_service import send_email
+from .price_service import get_all_price_data, get_total_price
 from django.utils import timezone
+from ..enums import EmailConfigurationType
 
 
 def save_checkout_form(form, cart) -> Order:
@@ -21,7 +22,6 @@ def save_checkout_form(form, cart) -> Order:
 
 
 def create_order(order, cart) -> Order:
-
     order.save()
 
     for cart_item in cart.cart_items.all():
@@ -36,8 +36,10 @@ def create_order(order, cart) -> Order:
 
     # notify the submitter via email
     try:
-        send_email(order.email, "Order Confirmation " + str(order.id),
-                                create_confirmation_body_html(order), create_confirmation_body_plain(order))
+        send_email(EmailConfigurationType.ORDER_CONFIRMATION, order.email,
+                   "Order Confirmation " + str(order.id),
+                   create_confirmation_body_html(order),
+                   create_confirmation_body_plain(order))
         order.confirmation_sent_date = timezone.now()
         order.save()
     except Exception as e:
@@ -47,7 +49,6 @@ def create_order(order, cart) -> Order:
 
 
 def create_confirmation_body_html(order: Order):
-
     subject = 'Order Confirmation ' + str(order.id)
     item_list = order.order_products.all()
     html_content = render_to_string(
@@ -63,7 +64,6 @@ def create_confirmation_body_html(order: Order):
 
 
 def create_confirmation_body_plain(order: Order):
-
     subject = 'Order Confirmation ' + str(order.id)
     item_list = order.order_products.all()
 

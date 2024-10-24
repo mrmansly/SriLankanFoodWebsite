@@ -2,6 +2,7 @@ from django.test import TestCase
 from main.forms import CheckoutForm, ContactForm
 from django.utils import timezone
 from main.models import ContactType
+from datetime import timedelta
 
 
 class TestForms(TestCase):
@@ -20,7 +21,7 @@ class TestForms(TestCase):
             'email': 'email@discard.com',
             'mobile': '0433333333',
             'home_phone': '+61894571664',
-            'requested_delivery_date': timezone.now()
+            'requested_delivery_date': timezone.now() + timedelta(days=2)
         })
         self.assertTrue(form.is_valid())
 
@@ -53,7 +54,7 @@ class TestForms(TestCase):
             'first_name': 'First'
         })
         self.assertFalse(form.is_valid())
-        self.assertEqual(len(form.errors), 4)
+        self.assertEqual(len(form.errors), 5)
 
     def test_contact_form_valid_with_response_required(self):
 

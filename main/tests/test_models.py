@@ -7,7 +7,7 @@ from datetime import timedelta
 
 from main.models import (User, Classification, Product, Cart, CartItem, Order,
                          FaqCategory, Faq, OrderProduct, ContactType, Contact,
-                         SystemPreference, ProductStock)
+                         SystemPreference, ProductStock, EmailConfiguration)
 
 
 class TestModels(TestCase):
@@ -71,6 +71,11 @@ class TestModels(TestCase):
             name="preferenceName",
             type="boolean",
             value="True"
+        )
+
+        self.email_configuration = EmailConfiguration.objects.create(
+            type='emailConfigurationType',
+            from_email='fromemail@discard.com'
         )
 
     def test_user_unique_user_name(self):
@@ -383,3 +388,11 @@ class TestModels(TestCase):
                 mobile='0418502729',
                 requested_delivery_date=timezone.now() + timedelta(days=-10)
             )
+
+    def test_email_configuration(self):
+        email_configuration = EmailConfiguration.objects.get(type=self.email_configuration.type)
+        self.assertEqual(email_configuration.from_email, self.email_configuration.from_email)
+
+    def test_email_configuration_duplicate(self):
+        with self.assertRaises(IntegrityError):
+            EmailConfiguration.objects.create(type=self.email_configuration.type, from_email="anotheremail@discard.com")

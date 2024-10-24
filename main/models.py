@@ -88,12 +88,16 @@ class Order(models.Model):
     cancelled_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"Order {self.id}: created on {self.created_date}"
+        return f"Order {self.id}: created on {self.created_date} for {self.first_name} {self.last_name}"
 
     def clean(self):
         self.mobile = validate_mobile(self.mobile)
         self.home_phone = validate_landline(self.home_phone)
-        self.validate_requested_delivery_date()
+
+        if not self.pk:
+            # only validate the requested delivery date is a future date if its being
+            # written to the db for the first time.
+            self.validate_requested_delivery_date()
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -101,7 +105,7 @@ class Order(models.Model):
 
     # validate that the requested delivery date is a future date
     def validate_requested_delivery_date(self):
-        if self.requested_delivery_date < timezone.now():
+        if self.requested_delivery_date is None or self.requested_delivery_date < timezone.now():
             raise ValidationError("Requested Delivery Date must be a future date.")
 
 
@@ -218,3 +222,15 @@ class SystemPreference(models.Model):
 
     def __str__(self):
         return f"{self.id} - {self.name}:{self.value}"
+
+
+class EmailConfiguration(models.Model):
+    type = models.CharField(max_length=200, unique=True)
+    from_email = models.EmailField(max_length=320)
+    cc_email = models.EmailField(max_length=320, null=True, blank=True)
+    bcc_email = models.EmailField(max_length=320, null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.type} - From:{self.from_email}, CC:{self.cc_email}, BCC:{self.bcc_email}"
