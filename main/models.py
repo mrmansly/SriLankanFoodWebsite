@@ -88,7 +88,10 @@ class Order(models.Model):
     cancelled_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"Order {self.id}: created on {self.created_date} for {self.first_name} {self.last_name}"
+        message = f"Order {self.id}: created on {self.created_date} for {self.first_name} {self.last_name}"
+        if self.cancelled_date is not None:
+            message += f" was cancelled on {self.cancelled_date}"
+        return message
 
     def clean(self):
         self.mobile = validate_mobile(self.mobile)
