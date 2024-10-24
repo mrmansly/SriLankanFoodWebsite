@@ -1,5 +1,6 @@
 import json
 from django.utils import timezone
+from datetime import timedelta
 from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from django.urls import reverse
@@ -134,7 +135,7 @@ class TestViews(TestCase):
             'last_name': 'Doe',
             'email': 'john@example.com',
             'mobile': '0418502729',
-            'requested_delivery_date': timezone.now()
+            'requested_delivery_date': timezone.now() + timedelta(days=2)
             # Include any other required fields for CheckoutForm
         }
 

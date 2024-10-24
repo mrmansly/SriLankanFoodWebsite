@@ -18,3 +18,7 @@ class ContactNotificationTypeEnum(Enum):
 class SystemPreferenceName(Enum):
     GST_ENABLED = "gstEnabled"
     GST_RATE = "gstRate"
+
+
+class EmailConfigurationType(Enum):
+    ORDER_CONFIRMATION = "ORDER_CONFIRMATION"

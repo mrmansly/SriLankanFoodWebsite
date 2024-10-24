@@ -11,6 +11,9 @@
         const menuButton = document.getElementById('menu-button');
         menuButton.addEventListener('click', () => window.location.href='{% url 'menu' %}' );
 
+        // get the earliest date from today's date and time, to the next 30 minute step increment.
+        // eg. if date is 1/Jan/2020 11:29, the earliest date allowed is 1/Jan/2020 11:30.
+        //     if date is 1/Jan/2020 11:31, the earliest date allowed is 1/Jan/2020 12:00.
         function getEarliestValidDate(now) {
             let minutes = now.getMinutes();
             let hours = now.getHours();
@@ -33,7 +36,8 @@
             datetimeField.min = earliestValidDate;
             datetimeField.value = earliestValidDate;
 
-            // Add event listener to check if the selected date/time is valid
+            // Add event listener to check if the selected date/time is valid and if not valid reset it to the
+            // earliest minimum date.
             datetimeField.addEventListener('change', function() {
                 const selectedDateTime = new Date(datetimeField.value);
 
