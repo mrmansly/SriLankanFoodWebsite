@@ -34,7 +34,7 @@ def create_order(order, cart) -> Order:
     # remove the cart after it has been converted to an order as no longer needed
     cart.delete()
 
-    # notify the submitter via email
+    # notify the submitter via email.
     try:
         send_email(EmailConfigurationType.ORDER_CONFIRMATION, order.email,
                    "Order Confirmation " + str(order.id),
@@ -43,6 +43,8 @@ def create_order(order, cart) -> Order:
         order.confirmation_sent_date = timezone.now()
         order.save()
     except Exception as e:
+        # if email fails to send, there will be another job to check for this and resend so that the order doesn't
+        # get ignored.
         print(f"Error sending email: {e}")
 
     return order
