@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from main.models import Cart, Contact, Faq, FaqCategory, Product, Classification, ContactType
 from main.forms import CheckoutForm, ContactForm
-from .services.cart_service import get_cart, add_product, update_cart_details
+from .services.cart_service import get_cart, add_product
 from .services.order_service import save_checkout_form
 from .services.price_service import get_all_price_data
 from .services.contact_service import save_contact
@@ -11,7 +11,6 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import CartSerializer, ContactSerializer, ProductSerializer, ClassificationSerializer, \
     ContactTypeSerializer, FaqCategorySerializer, FaqSerializer
-from django.core.exceptions import ValidationError
 
 
 def index_view(response):
@@ -19,14 +18,19 @@ def index_view(response):
 
 
 def menu_view(request):
-    classifications = Classification.objects.all().order_by("order")
-    product_list = Product.objects.all()
+    classifications = Classification.objects.prefetch_related('product_set__stock').all().order_by("order")
 
-    # display a success message that contact was submitted, but for now just
+    # for classification in classifications:
+    #     for product in classification.product_set.all():
+    #         try:
+    #             product_stock = product.stock
+    #         except ProductStock.DoesNotExist:
+    #             product.stock = None
+    #             print(f"Product has no stock")
+
     # go back to the products page
     return render(request, 'main/menu.html', {
-        'products': product_list,
-        'classifications': classifications,
+        'classifications': classifications,  # includes products (and product stock where applicable)
         'cartItems': get_cart(get_session_id(request)).cart_items.all()
     })
 

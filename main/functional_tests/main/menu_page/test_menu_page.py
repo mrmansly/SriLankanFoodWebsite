@@ -3,7 +3,7 @@ from ..sri_lankan_delights_test_case import SriLankanDelightsTestCase
 from django.urls import reverse
 from selenium.webdriver.common.by import By
 from ..base_page.base_page_locators import BasePageLocators
-from ..menu_loader_utils import load_sample_product
+from main.fixtures.fixture_loader_utils import load_sample_product
 
 
 class TestMenuPage(SriLankanDelightsTestCase):

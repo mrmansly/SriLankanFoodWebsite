@@ -22,7 +22,7 @@ class User(models.Model):
 class Classification(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=200)
-    order = models.IntegerField(default=1)
+    order = models.IntegerField(default=1)  # position order compared to other classifications (for display purposes)
 
     def __str__(self):
         return f"Classification {self.name} (Order:{self.order}): {self.description}"
@@ -123,7 +123,7 @@ class OrderProduct(models.Model):
 
 
 class ProductStock(models.Model):
-    product = models.OneToOneField(Product, on_delete=models.CASCADE)
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='stock')
     quantity = models.IntegerField(default=0)
     updated_date = models.DateTimeField(auto_now=True)
 
