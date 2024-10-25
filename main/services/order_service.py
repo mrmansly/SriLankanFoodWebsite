@@ -1,9 +1,10 @@
 from django.template.loader import render_to_string
-from ..models import Order, OrderProduct
+from ..models import Order, OrderProduct, ProductStock
 from .email_service import send_email
 from .price_service import get_all_price_data, get_total_price
 from django.utils import timezone
 from ..enums import EmailConfigurationType
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def save_checkout_form(form, cart) -> Order:
@@ -24,12 +25,7 @@ def save_checkout_form(form, cart) -> Order:
 def create_order(order, cart) -> Order:
     order.save()
 
-    for cart_item in cart.cart_items.all():
-        order_item = OrderProduct(product=cart_item.product,
-                                  order=order,
-                                  quantity=cart_item.quantity,
-                                  instructions=cart_item.instructions)
-        order_item.save()
+    save_order_products(order, cart.cart_items.all())
 
     # remove the cart after it has been converted to an order as no longer needed
     cart.delete()
@@ -48,6 +44,31 @@ def create_order(order, cart) -> Order:
         print(f"Error sending email: {e}")
 
     return order
+
+
+def save_order_products(order, cart_items):
+    for cart_item in cart_items:
+        order_item = OrderProduct(product=cart_item.product,
+                                  order=order,
+                                  quantity=cart_item.quantity,
+                                  instructions=cart_item.instructions)
+        order_item.save()
+        decrement_product_stock(order_item)
+
+
+def decrement_product_stock(order_item):
+    try:
+        product_stock = ProductStock.objects.get(product=order_item.product)
+        product_stock.quantity = product_stock.quantity - order_item.quantity
+
+        if product_stock.quantity < 0:
+            product_stock.quantity = 0
+
+        product_stock.save()
+
+    except ObjectDoesNotExist:
+        # if no product stock is found for this product then no reduction in quantity is needed
+        pass
 
 
 def create_confirmation_body_html(order: Order):

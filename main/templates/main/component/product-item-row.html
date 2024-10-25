@@ -115,6 +115,11 @@
                                 <p id="quantity">{{ product.id|use_cart_item_quantity:cart }}</p>
                                 <i class="clickable-icon add-quantity add-icon fa-solid fa-circle-plus fs-5"></i>
                             </div>
+                            {% if product.stock and product.stock.quantity > 0 %}
+                            <div class="product-stock">
+                                <label class="align-top small">Stock Remaining: {{ product.stock.quantity }}</label>
+                            </div>
+                            {% endif %}
                             <div class="col-12 mt-2" id="{{ product.id }}-instructions-section">
                                 <div class="d-flex gap-2">
                                     <label for="instructions" class="align-top small">Special Instructions</label>

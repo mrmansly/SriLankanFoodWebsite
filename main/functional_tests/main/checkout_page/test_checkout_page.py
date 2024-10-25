@@ -1,6 +1,6 @@
 from ..sri_lankan_delights_test_case import SriLankanDelightsTestCase
 from django.urls import reverse
-from ..menu_loader_utils import load_sample_product
+from main.fixtures.fixture_loader_utils import load_sample_product
 from selenium.webdriver.common.by import By
 from .checkout_page_locators import CheckoutPageLocators
 from ..sri_lankan_delights_test_case import create_gst_preferences

@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 from main.forms import CheckoutForm, ContactForm
 from main.models import Cart, CartItem, Product, Classification, ContactType, \
-    Faq, FaqCategory, Order, OrderProduct
+    Faq, FaqCategory, Order, OrderProduct, ProductStock
 from main.views import get_session_id, get_serialized_cart
 
 
@@ -14,11 +14,13 @@ class TestViews(TestCase):
 
     def setUp(self):
         # Create sample classifications and products
-        Classification.objects.create(name='Electronics', order=1)
-        Classification.objects.create(name='Books', order=2)
+        self.electronics_classification = Classification.objects.create(name='Electronics', order=1)
+        self.books_classification = Classification.objects.create(name='Books', order=2)
 
-        Product.objects.create(name='Laptop', price=1000)
-        Product.objects.create(name='Book', price=20)
+        Product.objects.create(name='Laptop', price=1000, classification=self.electronics_classification)
+        self.book_product = Product.objects.create(name='Book', price=20, classification=self.books_classification)
+
+        self.book_product_stock = ProductStock.objects.create(product=self.book_product, quantity=2)
 
         session = self.client.session
         session['session_key'] = 'mocked-session-id'
@@ -33,7 +35,7 @@ class TestViews(TestCase):
 
     @patch('main.views.get_cart')  # Adjust the import path to your actual view location
     @patch('main.views.get_session_id')  # Adjust the import path to your actual view location
-    def test_products_view_GET(self, mock_get_session_id, mock_get_cart):
+    def test_menu_view_GET(self, mock_get_session_id, mock_get_cart):
         # Mock the session ID and cart items
         mock_get_session_id.return_value = 'mock_session_id'
         mock_cart = mock_get_cart.return_value
@@ -49,14 +51,23 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, 'main/menu.html')
 
         # Assert the context contains the expected data
-        self.assertIn('products', response.context)
         self.assertIn('classifications', response.context)
         self.assertIn('cartItems', response.context)
 
         # Assert the correct data is in the context
-        self.assertEqual(len(response.context['products']), 2)  # 2 products created
         self.assertEqual(len(response.context['classifications']), 2)  # 2 classifications created
         self.assertEqual(response.context['cartItems'], ['Item1', 'Item2'])
+
+        # Assert that product stock is retrieved (where applicable)
+        classifications = response.context['classifications']
+        book_classification = classifications.filter(name='Books').first()
+        book_product = book_classification.product_set.first()
+        self.assertEqual(book_product.stock.quantity, self.book_product_stock.quantity)
+
+        electronic_classification = classifications.filter(name='Electronics').first()
+        laptop_product = electronic_classification.product_set.first()
+        with self.assertRaises(ProductStock.DoesNotExist):
+            _ = laptop_product.stock
 
         # Optionally assert that the mocked functions were called
         mock_get_session_id.assert_called_once_with(response.wsgi_request)
