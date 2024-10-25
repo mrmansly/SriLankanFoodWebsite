@@ -58,7 +58,6 @@ class TestViews(TestCase):
         self.assertEqual(len(response.context['classifications']), 2)  # 2 classifications created
         self.assertEqual(response.context['cartItems'], ['Item1', 'Item2'])
 
-
         # Assert that product stock is retrieved (where applicable)
         classifications = response.context['classifications']
         book_classification = classifications.filter(name='Books').first()
