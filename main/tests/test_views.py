@@ -67,7 +67,7 @@ class TestViews(TestCase):
 
         electronic_classification = classifications.filter(name='Electronics').first()
         laptop_product = electronic_classification.product_set.first()
-        with self.assertRaises(mProductStock.DoesNotExist):
+        with self.assertRaises(ProductStock.DoesNotExist):
             _ = laptop_product.stock
 
         # Optionally assert that the mocked functions were called

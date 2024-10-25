@@ -20,14 +20,6 @@ def index_view(response):
 def menu_view(request):
     classifications = Classification.objects.prefetch_related('product_set__stock').all().order_by("order")
 
-    # for classification in classifications:
-    #     for product in classification.product_set.all():
-    #         try:
-    #             product_stock = product.stock
-    #         except ProductStock.DoesNotExist:
-    #             product.stock = None
-    #             print(f"Product has no stock")
-
     # go back to the products page
     return render(request, 'main/menu.html', {
         'classifications': classifications,  # includes products (and product stock where applicable)

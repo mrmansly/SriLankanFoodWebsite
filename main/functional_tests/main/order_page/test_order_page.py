@@ -1,5 +1,3 @@
-import time
-
 from ..sri_lankan_delights_test_case import SriLankanDelightsTestCase
 from django.urls import reverse
 from .order_page_locators import OrderPageLocators
