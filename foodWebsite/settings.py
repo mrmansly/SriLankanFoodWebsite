@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from .vault_client import VaultClient
+
+# Create a vault client to retrieve any secrets required for setup
+vault_client = VaultClient()
+vault_client.authenticate()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+SECRET_KEY = vault_client.get_vault_secret('srilankandelights_django_secret_key')['value']
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',')
 CSRF_TRUSTED_ORIGINS = os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',')
@@ -33,7 +38,6 @@ if ENVIRONMENT == 'prod':
     DEBUG = False
 else:
     DEBUG = True
-
 
 # Application definition
 
@@ -97,14 +101,22 @@ if ENVIRONMENT == 'dev_local':
         }
     }
 else:
+
+    DJANGO_DB_ENGINE = vault_client.get_vault_secret('srilankandelights_db_engine')['value']
+    DJANGO_DB_NAME = vault_client.get_vault_secret('srilankandelights_db_name')['value']
+    DJANGO_DB_USER = vault_client.get_vault_secret('srilankandelights_db_user')['value']
+    DJANGO_DB_PASSWORD = vault_client.get_vault_secret('srilankandelights_db_password')['value']
+    DJANGO_DB_HOST = vault_client.get_vault_secret('srilankandelights_db_host')['value']
+    DJANGO_DB_PORT = vault_client.get_vault_secret('srilankandelights_db_port')['value']
+
     DATABASES = {
         'default': {
-            'ENGINE': os.getenv('DJANGO_DB_ENGINE'),
-            'NAME': os.getenv('DJANGO_DB_NAME'),
-            'USER': os.getenv('DJANGO_DB_USER'),
-            'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
-            'HOST': os.getenv('DJANGO_DB_HOST'),
-            'PORT': os.getenv('DJANGO_DB_PORT')
+            'ENGINE': DJANGO_DB_ENGINE,
+            'NAME': DJANGO_DB_NAME,
+            'USER': DJANGO_DB_USER,
+            'PASSWORD': DJANGO_DB_PASSWORD,
+            'HOST': DJANGO_DB_HOST,
+            'PORT': DJANGO_DB_PORT
         }
     }
 
@@ -143,7 +155,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join('/var/www/SriLankanFoodWebsite', 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "main/static/main/"),
@@ -160,10 +172,10 @@ SASS_PROCESSOR_ENABLED = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_SERVER_HOST = os.getenv('DJANGO_EMAIL_SERVER_HOST')
-EMAIL_SERVER_PORT = os.getenv('DJANGO_EMAIL_SERVER_PORT')
-EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_HOST_PASSWORD')
+EMAIL_HOST_PASSWORD = vault_client.get_vault_secret('srilankandelights_email_password')['value']
+EMAIL_SERVER_HOST = vault_client.get_vault_secret('srilankandelights_email_server_host')['value']
+EMAIL_SERVER_PORT = vault_client.get_vault_secret('srilankandelights_email_server_port')['value']
+EMAIL_HOST_USER = vault_client.get_vault_secret('srilankandelights_email_user')['value']
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = EMAIL_SERVER_HOST
