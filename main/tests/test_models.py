@@ -1,11 +1,13 @@
+from django.utils import timezone
 from django.test import TestCase
 from unittest.mock import patch
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
+from datetime import timedelta
 
-from main.models import (User, Classification, Product, Cart, CartItem, Order, \
-                         FaqCategory, Faq, OrderProduct, ContactType, Contact, \
-                         SystemPreference)
+from main.models import (User, Classification, Product, Cart, CartItem, Order,
+                         FaqCategory, Faq, OrderProduct, ContactType, Contact,
+                         SystemPreference, ProductStock, EmailConfiguration)
 
 
 class TestModels(TestCase):
@@ -35,11 +37,18 @@ class TestModels(TestCase):
             classification=self.classification1
         )
 
+        self.product1Stock = ProductStock.objects.create(
+            product=self.product1,
+            quantity=1
+        )
+
         self.order1 = Order.objects.create(
             first_name='First',
             last_name='Last',
-            email='email',
-            total_price=100
+            email='email@email.com',
+            total_price=100,
+            mobile='0418502729',
+            requested_delivery_date=timezone.now() + timedelta(days=1)
         )
 
         self.contact_type1 = ContactType.objects.create(
@@ -62,6 +71,11 @@ class TestModels(TestCase):
             name="preferenceName",
             type="boolean",
             value="True"
+        )
+
+        self.email_configuration = EmailConfiguration.objects.create(
+            type='emailConfigurationType',
+            from_email='fromemail@discard.com'
         )
 
     def test_user_unique_user_name(self):
@@ -355,3 +369,30 @@ class TestModels(TestCase):
             SystemPreference.objects.create(name="preferenceName",
                                             type="string",
                                             value="anything")
+
+    def test_product_stock(self):
+        product_stock = ProductStock.objects.get(product_id=self.product1.id)
+        self.assertEqual(product_stock.quantity, self.product1Stock.quantity)
+
+    def test_product_stock_duplicate(self):
+        with self.assertRaises(IntegrityError):
+            ProductStock.objects.create(product_id=self.product1.id, quantity=1)
+
+    def test_order_with_past_date(self):
+        with self.assertRaises(ValidationError):
+            Order.objects.create(
+                first_name='First',
+                last_name='Last',
+                email='email@email.com',
+                total_price=100,
+                mobile='0418502729',
+                requested_delivery_date=timezone.now() + timedelta(days=-10)
+            )
+
+    def test_email_configuration(self):
+        email_configuration = EmailConfiguration.objects.get(type=self.email_configuration.type)
+        self.assertEqual(email_configuration.from_email, self.email_configuration.from_email)
+
+    def test_email_configuration_duplicate(self):
+        with self.assertRaises(IntegrityError):
+            EmailConfiguration.objects.create(type=self.email_configuration.type, from_email="anotheremail@discard.com")

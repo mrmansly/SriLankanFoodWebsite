@@ -156,9 +156,9 @@ html, body {
 
   h1 {
     line-height: normal;
-    padding: 0 5rem 0 5rem;
+    padding: 0 2rem 0 2rem;
 
-    @media (max-width: 450px) {
+    @media (max-width: 460px) {
       padding: 0 2rem 0 2rem;
     }
   }
@@ -186,8 +186,11 @@ html, body {
 
 .warning-text {
   color: $lankan-dark-red;
-  font-size: large;
-  font-weight: bold;
+  background-color: lighten($lankan-yellow, 20%);
+  border-radius: 15px;
+  padding: 1rem;
+  font-size: smaller;
+  margin-bottom: 1rem;
 }
 
 .product-item-row {
@@ -417,7 +420,7 @@ html, body {
   gap: 20px;
   justify-content: space-between;
   background: linear-gradient(to right, $lankan-saffron, $lankan-yellow, $lankan-saffron);
-  border-radius: 10px;
+  border-radius: 15px;
   padding: 0 20px 0 20px;
   height: 40px;
   margin-bottom: 30px;
@@ -604,6 +607,31 @@ html, body {
   cursor: pointer;
 }
 
+.flashing-text {
+  color: $lankan_saffron;
+  animation: flash 2s infinite;
+
+  @media (max-width: 992px) {
+    display: none;
+  }
+
+}
+
+.ignore-a-styling {
+  text-decoration: unset;
+  color: unset;
+
+  &:hover {
+    color: unset;
+  }
+}
+
+@keyframes flash {
+  0% { color: $lankan_saffron; }
+  50% { color: $lankan_yellow; }
+  100% { color: $lankan_saffron; }
+}
+
 .article-first-paragraph {
   h1::first-letter, h2::first-letter, h3::first-letter, h4::first-letter, h5::first-letter {
     text-transform: uppercase;
@@ -643,4 +671,21 @@ input[type=number] {
 .read-only-instructions {
   font-style: italic;
   font-size: smaller;
+}
+
+.rotating-text {
+  fill: $lankan-saffron;
+  font-weight: 500;
+  font-size: smaller;
+  transform-origin: 50% 50%;
+  animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
 }

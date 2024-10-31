@@ -1,0 +1,19 @@
+[
+  {
+    "model": "main.Cart",
+    "pk": 1,
+    "fields": {
+      "session_id": "12345"
+    }
+  },
+  {
+    "model": "main.CartItem",
+    "pk": 1,
+    "fields": {
+      "cart": 1,
+      "product": 2,
+      "quantity": 1,
+      "instructions": "Special Instructions"
+    }
+  }
+]

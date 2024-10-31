@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from .enums import ContactNotificationTypeEnum, ContactTypeEnum
 from django.core.exceptions import ValidationError
+from .services.phone_validation_service import validate_mobile, validate_landline
 
 
 # Create your models here.
@@ -21,7 +22,7 @@ class User(models.Model):
 class Classification(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=200)
-    order = models.IntegerField(default=1)
+    order = models.IntegerField(default=1)  # position order compared to other classifications (for display purposes)
 
     def __str__(self):
         return f"Classification {self.name} (Order:{self.order}): {self.description}"
@@ -82,11 +83,33 @@ class Order(models.Model):
     total_price = models.FloatField()
     requested_delivery_date = models.DateTimeField(null=True, verbose_name="Delivery Date")
     created_date = models.DateTimeField(default=timezone.now)
-    completed_date = models.DateTimeField(null=True)
-    confirmation_sent_date = models.DateTimeField(null=True)
+    completed_date = models.DateTimeField(null=True, blank=True)
+    confirmation_sent_date = models.DateTimeField(null=True, blank=True, db_index=True)
+    cancelled_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"Order {self.id}: created on {self.created_date}"
+        message = f"Order {self.id}: created on {self.created_date} for {self.first_name} {self.last_name}"
+        if self.cancelled_date is not None:
+            message += f" was cancelled on {self.cancelled_date}"
+        return message
+
+    def clean(self):
+        self.mobile = validate_mobile(self.mobile)
+        self.home_phone = validate_landline(self.home_phone)
+
+        if not self.pk:
+            # only validate the requested delivery date is a future date if its being
+            # written to the db for the first time.
+            self.validate_requested_delivery_date()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    # validate that the requested delivery date is a future date
+    def validate_requested_delivery_date(self):
+        if self.requested_delivery_date is None or self.requested_delivery_date < timezone.now():
+            raise ValidationError("Requested Delivery Date must be a future date.")
 
 
 class OrderProduct(models.Model):
@@ -97,6 +120,15 @@ class OrderProduct(models.Model):
 
     def __str__(self):
         return f"{self.quantity} item(s) of {self.product.name} belonging to Order {self.order.id}"
+
+
+class ProductStock(models.Model):
+    product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='stock')
+    quantity = models.IntegerField(default=0)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.quantity} item(s) of {self.product.name} currently in stock"
 
 
 class FaqCategory(models.Model):
@@ -176,6 +208,9 @@ class Contact(models.Model):
         if self.type_id == ContactTypeEnum.REVIEW.value and self.rating is None:
             raise ValidationError('A rating is required when submitting a Food Review')
 
+        self.mobile = validate_mobile(self.mobile)
+        self.home_phone = validate_landline(self.home_phone)
+
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
@@ -190,3 +225,15 @@ class SystemPreference(models.Model):
 
     def __str__(self):
         return f"{self.id} - {self.name}:{self.value}"
+
+
+class EmailConfiguration(models.Model):
+    type = models.CharField(max_length=200, unique=True)
+    from_email = models.EmailField(max_length=320)
+    cc_email = models.EmailField(max_length=320, null=True, blank=True)
+    bcc_email = models.EmailField(max_length=320, null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.type} - From:{self.from_email}, CC:{self.cc_email}, BCC:{self.bcc_email}"

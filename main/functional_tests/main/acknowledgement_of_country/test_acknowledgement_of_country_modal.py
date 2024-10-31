@@ -1,4 +1,3 @@
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from .acknowledgement_of_country_locators import AcknowledgementOfCountryLocators as Locators
