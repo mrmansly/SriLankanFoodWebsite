@@ -15,6 +15,9 @@ key_count=0
 [ -n "$UNSEAL_KEY_2" ] && key_count=$((key_count + 1))
 [ -n "$UNSEAL_KEY_3" ] && key_count=$((key_count + 1))
 
+# allow a bit of time for vault to be started successfully
+sleep 5
+
 if [ $key_count -lt 3 ]; then
   echo "Error: 3 UNSEAL_KEY environment variables have not been set."
   exit 1
