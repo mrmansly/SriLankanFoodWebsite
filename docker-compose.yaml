@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  django:
+    container_name: sri-lankan-delights-web
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - VAULT_ADDR=http://vault:8200
+      - VAULT_PRIVILEGED_TOKEN=${VAULT_PRIVILEGED_TOKEN}
+      - DJANGO_CSRF_TRUSTED_ORIGINS=${DJANGO_CSRF_TRUSTED_ORIGINS}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - DJANGO_ENV=${DJANGO_ENV}
+    depends_on:
+      - unseal_vault
+    networks:
+      - vault_network
+    volumes:
+      - web-app-files:/var/www/SriLankanFoodWebsite
+
+  vault:
+    image: hashicorp/vault:latest
+    container_name: vault
+    cap_add:
+      - IPC_LOCK
+    environment:
+      - VAULT_ADDR=http://vault:8200
+    volumes:
+      - ./vault/vault.hcl:/vault/config/vault.hcl
+      - ./vault/read-secrets-policy.hcl:/vault/config/read-secrets-policy.hcl
+      - ./vault/sld-privilege-policy.hcl:/vault/config/sld-privilege-policy.hcl
+      - /vault/data:/vault/data
+    ports:
+      - "8200:8200"
+    command: server
+    restart: unless-stopped
+    networks:
+      - vault_network
+
+  unseal_vault:
+    image: hashicorp/vault:latest
+    container_name: unseal_vault
+    depends_on:
+      - vault
+    environment:
+      - VAULT_ADDR=http://vault:8200
+      - UNSEAL_KEY_1=${UNSEAL_KEY_1}
+      - UNSEAL_KEY_2=${UNSEAL_KEY_2}
+      - UNSEAL_KEY_3=${UNSEAL_KEY_3}
+    networks:
+      - vault_network
+    volumes:
+      - ./vault/unseal_vault.sh:/usr/local/bin/unseal_vault.sh
+    entrypoint: ["/bin/sh", "/usr/local/bin/unseal_vault.sh"]
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - django
+
+networks:
+  vault_network:
+    driver: bridge
+
+volumes:
+  web-app-files:
