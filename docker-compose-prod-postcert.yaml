@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  django:
+    image: ghcr.io/mrmansly/sld-app-prod:latest
+    environment:
+      - VAULT_ADDR=http://vault:8200
+      - VAULT_PRIVILEGED_TOKEN=${VAULT_PRIVILEGED_TOKEN}
+      - DJANGO_CSRF_TRUSTED_ORIGINS=${DJANGO_CSRF_TRUSTED_ORIGINS}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - DJANGO_ENV=prod
+
+  vault:
+    image: ghcr.io/mrmansly/sld-vault:latest
+
+  unseal_vault:
+    image: ghcr.io/mrmansly/sld-unseal-vault:latest
+
+  nginx:
+    image: ghcr.io/mrmansly/sld-nginx-prod-postcert:latest
+    volumes:
+      - ./certs:/etc/letsencrypt
+      - web-app-files:/var/www/SriLankanFoodWebsite
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - certbot
+      - django
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certs:/etc/letsencrypt
+      - web-app-files:/var/www/SriLankanFoodWebsite
+    entrypoint: "/bin/sh -c 'certbot certonly --non-interactive --agree-tos --email admin@srilankandelights.com.au --webroot --webroot-path=/var/www/SriLankanFoodWebsite -d srilankandelights.com.au -d www.srilankandelights.com.au && trap exit TERM; while :; do certbot renew --non-interactive --agree-tos; sleep 12h & wait $${!}; done;'"
