@@ -1,0 +1,32 @@
+FROM python:3.12.5
+
+LABEL authors="mrmansly"
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Set the working directory in the container
+WORKDIR /app
+
+ENV DJANGO_SETTINGS_MODULE=foodWebsite.settings
+
+# Copy the application directory contents into the container
+COPY ./foodWebsite /app/foodWebsite/
+COPY ./main /app/main/
+COPY ./templates /app/templates/
+COPY ./manage.py /app/manage.py
+COPY ./requirements.txt /app/requirements.txt
+COPY ./docker/entrypoint.sh /app/
+
+# Required for dev
+COPY ./db.sqlite3 /app/db.sqlite3
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expose a port
+EXPOSE 8000
+
+ENTRYPOINT ["./entrypoint.sh"]
+
+CMD ["gunicorn", "--bind", "unix:/var/www/SriLankanFoodWebsite/foodWebsite.sock", "foodWebsite.wsgi:application", "--workers 3", "--access-logfile", "-"]
