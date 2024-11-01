@@ -1,4 +1,8 @@
 FROM nginx:latest
 
+# Use this prior to certificates being setup
 COPY ./nginx/nginx_prod.conf /etc/nginx/conf.d/default.conf
+
+# Copy this as default.conf once certificates have been configured
+COPY ./nginx/nginx_prod.conf.secure /etc/nginx/conf.d/default.conf.secure
 COPY ./nginx/proxy_params /etc/nginx/proxy_params
