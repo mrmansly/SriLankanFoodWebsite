@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   django:
-    image: ghcr.io/mrmansly/sld-app:latest
+    image: ghcr.io/mrmansly/sld-app-prod:latest
     environment:
       - VAULT_ADDR=http://vault:8200
       - VAULT_PRIVILEGED_TOKEN=${VAULT_PRIVILEGED_TOKEN}
@@ -17,7 +17,7 @@ services:
     image: ghcr.io/mrmansly/sld-unseal-vault:latest
 
   nginx:
-    image: ghcr.io/mrmansly/sld-nginx:latest
+    image: ghcr.io/mrmansly/sld-nginx-prod:latest
     volumes:
       - ./certs:/etc/letsencrypt
       - web-app-files:/var/www/SriLankanFoodWebsite
@@ -34,4 +34,4 @@ services:
     volumes:
       - ./certs:/etc/letsencrypt
       - web-app-files:/var/www/SriLankanFoodWebsite
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    entrypoint: "/bin/sh -c 'certbot certonly --webroot --webroot-path=/var/www/SriLankanFoodWebsite -d srilankandelights.com.au -d www.srilankandelights.com.au && trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
