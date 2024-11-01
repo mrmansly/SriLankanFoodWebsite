@@ -1,13 +1,11 @@
 server {
+    listen 443 ssl;
     server_name www.srilankandelights.com.au;
     # Redirect HTTP to HTTPS - use non-www url for consistent branding and SEO
     return 301 https://srilankandelights.com.au$request_uri;
 
-    listen 443 ssl; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/srilankandelights.com.au/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/srilankandelights.com.au/privkey.pem; # managed by Certbot
-#    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
-#    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 }
 
 server {
@@ -16,6 +14,8 @@ server {
 
         ssl_certificate /etc/letsencrypt/live/srilankandelights.com.au/fullchain.pem; # managed by Certbot
         ssl_certificate_key /etc/letsencrypt/live/srilankandelights.com.au/privkey.pem; # managed by Certbot
+  #      include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+  #      ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers HIGH:!aNULL:!MD5;
@@ -41,17 +41,20 @@ server {
 }
 server {
     listen 80;
-    server_name www.srilankandelights.com.au;
+    server_name www.srilankandelights.com.au srilankandelights.com.au;
 
     location /.well-known/acme-challenge/ {
         root /var/www/SriLankanFoodWebsite;
     }
 
     location / {
-         if ($host = www.srilankandelights.com.au) {
-            return 301 https://$host$request_uri;
-         } # managed by Certbot
+         if ($host = www.srilankandelights.com.au){
+            return 301 https://srilankandelights.com.au$request_uri;
+         }
+         if ($host = srilankandelights.com.au) {
+            return 301 https://srilankandelights.com.au$request_uri;
+         }
     }
 
-    return 404; # managed by Certbot
+    return 404;
 }
