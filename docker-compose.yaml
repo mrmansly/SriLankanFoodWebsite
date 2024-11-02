@@ -17,6 +17,7 @@ services:
       - vault_network
     volumes:
       - web-app-files:/var/www/SriLankanFoodWebsite
+    restart: unless-stopped
 
   vault:
     container_name: vault
@@ -43,6 +44,7 @@ services:
       - UNSEAL_KEY_3=${UNSEAL_KEY_3}
     networks:
       - vault_network
+    restart: on-failure
 
   nginx:
     container_name: nginx
@@ -50,6 +52,7 @@ services:
       - "80:80"
     depends_on:
       - django
+    restart: unless-stopped
 
 networks:
   vault_network:

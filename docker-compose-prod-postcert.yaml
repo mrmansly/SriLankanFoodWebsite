@@ -34,4 +34,5 @@ services:
     volumes:
       - ./certs:/etc/letsencrypt
       - web-app-files:/var/www/SriLankanFoodWebsite
+    restart: unless-stopped
     entrypoint: "/bin/sh -c 'certbot certonly --non-interactive --agree-tos --email admin@srilankandelights.com.au --webroot --webroot-path=/var/www/SriLankanFoodWebsite -d srilankandelights.com.au -d www.srilankandelights.com.au && trap exit TERM; while :; do certbot renew --non-interactive --agree-tos; sleep 12h & wait $${!}; done;'"
