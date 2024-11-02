@@ -17,7 +17,7 @@ services:
     image: ghcr.io/mrmansly/sld-unseal-vault:latest
 
   nginx:
-    image: ghcr.io/mrmansly/sld-nginx-prod:latest
+    image: ghcr.io/mrmansly/sld-nginx-prod-postcert:latest
     volumes:
       - ./certs:/etc/letsencrypt
       - web-app-files:/var/www/SriLankanFoodWebsite

@@ -163,7 +163,7 @@ STATICFILES_DIRS = [
     # Added so that auto generated css files (from sass-processor)
     # are picked up from this location. Need to see if this causes issues (looping?) as part of a prod
     # build where static files are being retrieved from the staticfiles location (after running collectstatic).
-    os.path.join(BASE_DIR, "staticfiles/main/css/")
+    # os.path.join(BASE_DIR, "staticfiles/main/css/")
 ]
 SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'main', 'static', 'main', 'css')
 SASS_PROCESSOR_ENABLED = True

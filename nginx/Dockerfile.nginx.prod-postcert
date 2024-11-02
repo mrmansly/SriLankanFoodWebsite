@@ -1,0 +1,5 @@
+FROM nginx:latest
+
+# Use this after cert has been configured (sld-nginx-prod-postcert image)
+COPY ./nginx/nginx_prod.conf.secure /etc/nginx/conf.d/default.conf
+COPY ./nginx/proxy_params /etc/nginx/proxy_params

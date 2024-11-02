@@ -1,0 +1,55 @@
+# Redirect https://www.srilankandelights.com.au -> https://srilankandelights.com.au
+server {
+    listen 443 ssl;
+    server_name www.srilankandelights.com.au;
+    # Redirect HTTP to HTTPS - use non-www url for consistent branding and SEO
+    return 301 https://srilankandelights.com.au$request_uri;
+
+    ssl_certificate /etc/letsencrypt/live/srilankandelights.com.au/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/srilankandelights.com.au/privkey.pem; # managed by Certbot
+}
+
+# Handle the https request on https://srilankandelights.com.au
+server {
+        listen 443 ssl;
+        server_name srilankandelights.com.au;
+
+        ssl_certificate /etc/letsencrypt/live/srilankandelights.com.au/fullchain.pem; # managed by Certbot
+        ssl_certificate_key /etc/letsencrypt/live/srilankandelights.com.au/privkey.pem; # managed by Certbot
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers on;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_timeout 10m;
+
+        location / {
+                # this is when proxying to the app server on a private subnet.
+                #proxy_pass http://10.0.2.211:8000;
+
+                # this is for testing nginx on same box as app server (https -> http) -> redirecting to a web socket for gunicorn.
+                proxy_pass http://unix:/var/www/SriLankanFoodWebsite/foodWebsite.sock;
+                include proxy_params;
+        }
+
+        location /static/ {
+                alias /var/www/SriLankanFoodWebsite/staticfiles/;
+                expires 7d;   # Cache for 7 days
+                add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+        }
+
+}
+
+# Redirect any http to https except for the certbot verification
+server {
+    listen 80;
+    server_name www.srilankandelights.com.au srilankandelights.com.au;
+
+    # Allow certbot access to the acme-challenge folder
+    location /.well-known/acme-challenge/ {
+        root /var/www/SriLankanFoodWebsite;
+    }
+
+    # Redirect everything else to https://srilankandelights.com.au
+    return 301 https://srilankandelights.com.au$request_uri;
+}

@@ -1,7 +1,6 @@
 FROM python:3.12.5
-LABEL authors="mrmansly"
 
-ARG ENVIRONMENT=dev
+LABEL authors="mrmansly"
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -9,21 +8,21 @@ ENV PYTHONUNBUFFERED=1
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the requirements file into the container
-COPY ../requirements.txt /app/
+ENV DJANGO_SETTINGS_MODULE=foodWebsite.settings
+
+# Copy the application directory contents into the container
+COPY ./foodWebsite /app/foodWebsite/
+COPY ./main /app/main/
+COPY ./templates /app/templates/
+COPY ./manage.py /app/manage.py
+COPY ./requirements.txt /app/requirements.txt
+COPY ./docker/entrypoint.sh /app/
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the application directory contents into the container
-COPY . /app/
-
-COPY ../docker/entrypoint.sh /app/
-
 # Expose a port
 EXPOSE 8000
-
-ENV DJANGO_SETTINGS_MODULE=foodWebsite.settings
 
 ENTRYPOINT ["./entrypoint.sh"]
 

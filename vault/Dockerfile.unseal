@@ -1,0 +1,5 @@
+FROM hashicorp/vault:latest
+
+COPY ./vault/unseal_vault.sh /usr/local/bin/
+
+CMD ["/bin/sh", "/usr/local/bin/unseal_vault.sh"]
