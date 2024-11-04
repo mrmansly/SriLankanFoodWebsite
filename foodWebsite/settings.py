@@ -156,17 +156,34 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'sass_processor.finders.CssFinder'
+]
+
+
 STATIC_ROOT = os.path.join('/var/www/SriLankanFoodWebsite', 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "main/static/main/"),
-    # Added so that auto generated css files (from sass-processor)
-    # are picked up from this location. Need to see if this causes issues (looping?) as part of a prod
-    # build where static files are being retrieved from the staticfiles location (after running collectstatic).
-    # os.path.join(BASE_DIR, "staticfiles/main/css/")
 ]
-SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, 'main', 'static', 'main', 'css')
 SASS_PROCESSOR_ENABLED = True
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        'OPTIONS': {
+            'location': STATIC_ROOT,
+        },
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+    'sass_processor': {
+        'ROOT': os.path.join(BASE_DIR, 'main', 'static', 'main', 'css')
+    }
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

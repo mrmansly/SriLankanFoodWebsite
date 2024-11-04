@@ -29,16 +29,6 @@
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
 
-    {# This next entry loads the css after the sass-processor generates it.#}
-    {# This should be handled automatically from call during dev, #}
-    {# but seems to need 2 distinct processes - 1 for generating the css (as above) and #}
-    {# and another for sourcing the generated file explicitly (as below). #}
-    {# Have updated settings.py to include staticfiles/main/css/ in the #}
-    {# STATICFILES_DIRS variable so the generated css class is found when #}
-    {# loading up the html.#}
-    <link rel="stylesheet" href="{% static 'main.css' %}">
-    {# This does have the problem that when loading up a page  #}
-
     <script type="text/javascript">
 
         function initialiseTooltips() {
