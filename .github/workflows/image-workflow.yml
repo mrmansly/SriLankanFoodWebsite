@@ -50,7 +50,7 @@ jobs:
 
       - name: Build and tag images
         run: |
-          case ${{ github.events.input.image }} in
+          case ${{ github.events.inputs.image }} in
           
             # Pre SSL Certification Setup Nginx Image
             nginx) 
@@ -107,7 +107,7 @@ jobs:
       - name: Push Docker image to GHCR
         if: success()
         run: |
-          case ${{ github.events.input.image }} in
+          case ${{ github.events.inputs.image }} in
             nginx)
               docker push $NGINX_IMAGE
               ;;
