@@ -5,6 +5,9 @@ on:
     branches:
       - master    # Trigger the workflow only when a PR is merged into "master"
 
+env:
+  SLD_APP_IMAGE: "ghcr.io/mrmansly/sld-app-prod:latest"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,9 +31,6 @@ jobs:
 
       - name: Build and tag images
         run: |
-          # Define image names
-          SLD_APP_IMAGE="ghcr.io/mrmansly/sld-app-prod:latest"
-          
           # Build the SLD Django app image explicitly (NOTE: nginx, vault, unseal_vault and certbot are not expected
           # to change and can be excluded from being built.
           docker build -f docker/Dockerfile.app.prod -t $SLD_APP_IMAGE .

@@ -14,6 +14,14 @@ on:
           - unseal_vault
           - sri_lankan_delights_app
 
+env:
+  SLD_APP_IMAGE: "ghcr.io/mrmansly/sld-app-prod:latest"
+  NGINX_IMAGE: "ghcr.io/mrmansly/sld-nginx-prod:latest"
+  NGINX_POSTCERT_IMAGE: "ghcr.io/mrmansly/sld-nginx-prod-postcert:latest"
+  VAULT_IMAGE: "ghcr.io/mrmansly/sld-vault:latest"
+  UNSEAL_VAULT_IMAGE: "ghcr.io/mrmansly/sld-unseal-vault:latest"
+
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -39,57 +47,47 @@ jobs:
           
             # Pre SSL Certification Setup Nginx Image
             nginx) 
-              IMAGE="ghcr.io/mrmansly/sld-nginx-prod:latest"
-          
-              docker build -f nginx/Dockerfile.nginx.prod -t $IMAGE .
+              docker build -f nginx/Dockerfile.nginx.prod -t $NGINX_IMAGE .
           
               # Also tag build with SHA Commit# for better traceability
               TAG="${{ github.sha }}"
-              docker tag $IMAGE ghcr.io/mrmansly/sld-nginx-prod:$TAG
+              docker tag $NGINX_IMAGE ghcr.io/mrmansly/sld-nginx-prod:$TAG
               ;;
           
             # Post SSL Certification Nginx Image
             nginx_postcert) 
-              IMAGE="ghcr.io/mrmansly/sld-nginx-prod-postcert:latest"
-          
-              docker build -f nginx/Dockerfile.nginx.prod-postcert -t $IMAGE .
+              docker build -f nginx/Dockerfile.nginx.prod-postcert -t $NGINX_POSTCERT_IMAGE .
           
               # Also tag build with SHA Commit# for better traceability
               TAG="${{ github.sha }}"
-              docker tag $IMAGE ghcr.io/mrmansly/sld-nginx-prod-postcert:$TAG
+              docker tag $NGINX_POSTCERT_IMAGE ghcr.io/mrmansly/sld-nginx-prod-postcert:$TAG
               ;;
           
             # Vault Image
             vault)
-              IMAGE="ghcr.io/mrmansly/sld-vault:latest"
-          
-              docker build -f vault/Dockerfile.vault -t $IMAGE .
+              docker build -f vault/Dockerfile.vault -t $VAULT_IMAGE .
           
               # Also tag build with SHA Commit# for better traceability
               TAG="${{ github.sha }}"
-              docker tag $IMAGE ghcr.io/mrmansly/sld-vault:$TAG
+              docker tag $VAULT_IMAGE ghcr.io/mrmansly/sld-vault:$TAG
               ;;
           
             # Unseal Vault Image
             unseal_vault)
-              IMAGE="ghcr.io/mrmansly/sld-unseal-vault:latest"
-          
-              docker build -f vault/Dockerfile.unseal -t $IMAGE .
+              docker build -f vault/Dockerfile.unseal -t $UNSEAL_VAULT_IMAGE .
           
               # Also tag build with SHA Commit# for better traceability
               TAG="${{ github.sha }}"
-              docker tag $IMAGE ghcr.io/mrmansly/sld-unseal-vault:$TAG
+              docker tag $UNSEAL_VAULT_IMAGE ghcr.io/mrmansly/sld-unseal-vault:$TAG
               ;;
           
             # Sri Lankan Delights Django App
             sri_lankan_delights_app)
-              IMAGE="ghcr.io/mrmansly/sld-app-prod:latest"
-          
-              docker build -f docker/Dockerfile.app.prod -t $IMAGE .
+              docker build -f docker/Dockerfile.app.prod -t $SLD_APP_IMAGE .
           
               # Also tag build with SHA Commit# for better traceability
               TAG="${{ github.sha }}"
-              docker tag $IMAGE ghcr.io/mrmansly/sld-app-prod:$TAG
+              docker tag $SLD_APP_IMAGE ghcr.io/mrmansly/sld-app-prod:$TAG
               ;;
           
             *)
@@ -104,23 +102,23 @@ jobs:
         run: |
           case ${{ github.events.input.image }} in
             nginx)
-              docker push ghcr.io/mrmansly/sld-nginx-prod:latest
+              docker push $NGINX_IMAGE
               ;;
           
             nginx_postcert)
-              docker push ghcr.io/mrmansly/sld-nginx-prod-postcert:latest
+              docker push $NGINX_POSTCERT_IMAGE
               ;;
           
             vault)
-              docker push ghcr.io/mrmansly/sld-vault:latest
+              docker push $VAULT_IMAGE
               ;;
           
             unseal_vault)
-              docker push ghcr.io/mrmansly/sld-unseal-vault:latest
+              docker push $UNSEAL_VAULT_IMAGE
               ;;
           
             sri_lankan_delights_app)
-              docker push ghcr.io/mrmansly/sld-app-prod:latest
+              docker push $SLD_APP_IMAGE
               ;;
           
           esac
