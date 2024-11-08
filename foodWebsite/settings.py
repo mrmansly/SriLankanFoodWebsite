@@ -53,7 +53,9 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     'rest_framework',
     'crispy_forms',
-    'crispy_bootstrap5'
+    'crispy_bootstrap5',
+    'django_filters',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -64,6 +66,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
+]
+
+CORS_ALLOWED_ORIGINS = [
+    os.getenv('ANGULAR_APP_URL')
 ]
 
 ROOT_URLCONF = 'foodWebsite.urls'
@@ -213,4 +220,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
     ],
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter'
+    )
 }

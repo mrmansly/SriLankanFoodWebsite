@@ -14,6 +14,8 @@ class User(models.Model):
     email = models.EmailField()
     mobile = models.CharField(max_length=20, null=True)
     home_phone = models.CharField(max_length=20, null=True)
+    created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f"Username {self.user_name}: {self.first_name} {self.last_name}"
@@ -23,6 +25,8 @@ class Classification(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=200)
     order = models.IntegerField(default=1)  # position order compared to other classifications (for display purposes)
+    created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f"Classification {self.name} (Order:{self.order}): {self.description}"
@@ -37,6 +41,8 @@ class Product(models.Model):
     image = models.CharField(null=True, max_length=100)
     chilli_level = models.IntegerField(null=True)
     contains_peanuts = models.BooleanField(default=False)
+    created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f"{self.name}"
@@ -47,6 +53,8 @@ class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, unique=True)
     # Used if there is no associated user logged in at the time
     session_id = models.CharField(null=True, max_length=40, blank=True, unique=True)
+    created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def clean(self):
         if self.user is None and self.session_id is None:
@@ -68,6 +76,8 @@ class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
     instructions = models.CharField(max_length=255, null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f"{self.quantity} item(s) of {self.product.name} exist in Cart {self.cart.id}"
@@ -82,7 +92,8 @@ class Order(models.Model):
     discount = models.FloatField(default=0)
     total_price = models.FloatField()
     requested_delivery_date = models.DateTimeField(null=True, verbose_name="Delivery Date")
-    created_date = models.DateTimeField(default=timezone.now)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
     completed_date = models.DateTimeField(null=True, blank=True)
     confirmation_sent_date = models.DateTimeField(null=True, blank=True, db_index=True)
     cancelled_date = models.DateTimeField(null=True, blank=True)
@@ -117,6 +128,8 @@ class OrderProduct(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     instructions = models.CharField(max_length=255, null=True)
+    created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f"{self.quantity} item(s) of {self.product.name} belonging to Order {self.order.id}"
@@ -125,6 +138,7 @@ class OrderProduct(models.Model):
 class ProductStock(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE, related_name='stock')
     quantity = models.IntegerField(default=0)
+    created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -136,6 +150,8 @@ class FaqCategory(models.Model):
     description = models.CharField(max_length=200)
     order = models.PositiveSmallIntegerField(default=1)
     active = models.BooleanField(default=True)
+    created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f"{self.id} - {self.category}"
@@ -146,7 +162,8 @@ class Faq(models.Model):
     answer = models.TextField(max_length=1000)
     category = models.ForeignKey(FaqCategory, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
-    created_date = models.DateField(default=timezone.now)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f"{self.id} - {self.question}"
@@ -156,6 +173,8 @@ class ContactType(models.Model):
     type = models.CharField(max_length=20, unique=True)
     description = models.CharField(max_length=200)
     active = models.BooleanField(default=True)
+    created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f"{self.id} - {self.type}"
@@ -191,7 +210,8 @@ class Contact(models.Model):
     # Value from 0 to 5 (0 being the worst and 5 being the best)
     rating = models.PositiveSmallIntegerField(choices=RATINGS_CHOICES, default=None, null=True, blank=True)
 
-    created_date = models.DateTimeField(default=timezone.now)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f"{self.type}: {self.title} - {self.message}"

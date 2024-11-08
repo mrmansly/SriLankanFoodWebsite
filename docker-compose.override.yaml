@@ -9,10 +9,13 @@ services:
       context: .
       dockerfile: docker/Dockerfile.app.dev
 
+# Use the local C: vault_data folder for storing vault data.
   vault:
     build:
       context: .
       dockerfile: vault/Dockerfile.vault
+    volumes:
+      - c:\vault_data:/vault/data
 
   unseal_vault:
     build:

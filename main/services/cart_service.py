@@ -11,7 +11,7 @@ def get_cart(session_id, user_id=None):
 
 def add_product(cart_id, product_id, quantity: int, instructions):
 
-    cart = Cart.objects.get(id=cart_id)
+    cart = Cart.objects.prefetch_related('cart_items').get(id=cart_id)
 
     if cart is None:
         raise ValueError("The cart is not found with id:" + cart_id)

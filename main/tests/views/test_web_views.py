@@ -1,4 +1,3 @@
-import json
 from django.utils import timezone
 from datetime import timedelta
 from unittest.mock import patch, MagicMock
@@ -7,12 +6,12 @@ from django.urls import reverse
 from main.forms import CheckoutForm, ContactForm
 from main.models import Cart, CartItem, Product, Classification, ContactType, \
     Faq, FaqCategory, Order, OrderProduct, ProductStock
-from main.views import get_session_id, get_serialized_cart
 
 
-class TestViews(TestCase):
+class TestWebViews(TestCase):
 
     def setUp(self):
+
         # Create sample classifications and products
         self.electronics_classification = Classification.objects.create(name='Electronics', order=1)
         self.books_classification = Classification.objects.create(name='Books', order=2)
@@ -33,8 +32,8 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'main/home.html')
 
-    @patch('main.views.get_cart')  # Adjust the import path to your actual view location
-    @patch('main.views.get_session_id')  # Adjust the import path to your actual view location
+    @patch('main.views.web_views.get_cart')  # Adjust the import path to your actual view location
+    @patch('main.views.web_views.get_session_id')  # Adjust the import path to your actual view location
     def test_menu_view_GET(self, mock_get_session_id, mock_get_cart):
         # Mock the session ID and cart items
         mock_get_session_id.return_value = 'mock_session_id'
@@ -73,23 +72,27 @@ class TestViews(TestCase):
         mock_get_session_id.assert_called_once_with(response.wsgi_request)
         mock_get_cart.assert_called_once_with('mock_session_id')
 
-    @patch('main.views.get_cart')
-    @patch('main.views.get_session_id')
-    @patch('main.views.get_all_price_data')
+    @patch('main.views.web_views.get_cart')
+    @patch('main.views.web_views.get_session_id')
+    @patch('main.views.web_views.get_all_price_data')
     def test_checkout_view_GET(self, mock_get_all_price_data,
                                mock_get_session_id,
                                mock_get_cart):
         # Mock the cart and session ID
         mock_get_session_id.return_value = 'mock_session_id'
-        mock_cart = mock_get_cart.return_value
+        mock_cart = MagicMock()
+
         item_list = ['Item1', 'Item2']
-        mock_cart.cart_items.all.return_value = item_list  # Mock cart items
+        mock_cart.cart_items.all.return_value = item_list
+        mock_get_cart.return_value = mock_cart
 
         price_data = {}
         mock_get_all_price_data.return_value = price_data
 
         # Simulate a POST request to the checkout view
         response = self.client.get(reverse('checkout'))
+        # request = self.factory.get('/checkout')
+        # response = checkout_view(request)
 
         # Assert that the response is a render of the order confirmed template
         self.assertTemplateUsed(response, 'main/checkout.html')
@@ -111,10 +114,10 @@ class TestViews(TestCase):
         mock_get_cart.assert_called_once_with('mock_session_id')
         mock_get_all_price_data.assert_called_once_with(item_list)
 
-    @patch('main.views.get_cart')
-    @patch('main.views.get_session_id')
-    @patch('main.views.save_checkout_form')
-    @patch('main.views.get_all_price_data')
+    @patch('main.views.web_views.get_cart')
+    @patch('main.views.web_views.get_session_id')
+    @patch('main.views.web_views.save_checkout_form')
+    @patch('main.views.web_views.get_all_price_data')
     def test_checkout_view_confirmation_valid_form(self, mock_get_all_price_data, mock_save_checkout_form,
                                                    mock_get_session_id,
                                                    mock_get_cart):
@@ -182,9 +185,9 @@ class TestViews(TestCase):
         self.assertIsInstance(args[0], CheckoutForm)
         self.assertEqual(args[1], mock_cart)
 
-    @patch('main.views.get_cart')
-    @patch('main.views.get_session_id')
-    @patch('main.views.get_all_price_data')
+    @patch('main.views.web_views.get_cart')
+    @patch('main.views.web_views.get_session_id')
+    @patch('main.views.web_views.get_all_price_data')
     def test_checkout_view_confirmation_invalid_form(self, mock_get_all_price_data, mock_get_session_id, mock_get_cart):
         # Mock the session ID and cart
         mock_get_session_id.return_value = 'mock_session_id'
@@ -221,9 +224,9 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, 'main/about.html')
         self.assertEqual(response.status_code, 200)
 
-    @patch('main.views.get_all_price_data')  # Mock get_all_price_data
-    @patch('main.views.get_cart')  # Mock get_cart
-    @patch('main.views.get_session_id')  # Mock get_session_id
+    @patch('main.views.web_views.get_all_price_data')  # Mock get_all_price_data
+    @patch('main.views.web_views.get_cart')  # Mock get_cart
+    @patch('main.views.web_views.get_session_id')  # Mock get_session_id
     def test_order_view_get_request(self, mock_get_session_id, mock_get_cart, mock_get_all_price_data):
         # Mock the session ID
         mock_get_session_id.return_value = 'mock_session_id'
@@ -258,8 +261,8 @@ class TestViews(TestCase):
         # Assert that get_all_price_data was called with the correct item list
         mock_get_all_price_data.assert_called_once_with(item_list)
 
-    @patch('main.views.Faq.objects.filter')  # Mock Faq.objects.filter
-    @patch('main.views.FaqCategory.objects.filter')  # Mock FaqCategory.objects.filter
+    @patch('main.views.web_views.Faq.objects.filter')  # Mock Faq.objects.filter
+    @patch('main.views.web_views.FaqCategory.objects.filter')  # Mock FaqCategory.objects.filter
     def test_faq_view_get_request(self, mock_faq_category_filter, mock_faq_filter):
         faq_category = FaqCategory(category='category')
         faq = Faq(category=faq_category)
@@ -300,7 +303,7 @@ class TestViews(TestCase):
         form_context = response.context['form']
         self.assertIs(form_context, ContactForm)
 
-    @patch('main.views.save_contact')  # Mock the save_contact function
+    @patch('main.views.web_views.save_contact')  # Mock the save_contact function
     def test_contact_view_post_valid_form(self, mock_save_contact):
 
         # Create an entry for form validation to be successful, hence why a rating must be passed through as well.
@@ -343,28 +346,6 @@ class TestViews(TestCase):
         self.assertIn('form', response.context)
         self.assertFalse(response.context['form'].is_valid())
 
-    def test_get_session_id_existing_session(self):
-        # Mock request with an existing session
-        request = MagicMock()
-        request.session.session_key = 'existing_session_key'
-
-        session_id = get_session_id(request)
-        self.assertEqual(session_id, 'existing_session_key')
-        request.session.create.assert_not_called()  # Ensure create is not called
-
-    def test_get_session_id_no_session(self):
-        # Mock request with no existing session
-        request = MagicMock()
-        request.session.session_key = None
-        request.session.create = MagicMock()  # Mock create method
-
-        session_id = get_session_id(request)
-
-        # We cannot verify the session id as we are mocking the create method. Therefore simulate the setting of the
-        # session key that occurs as part of the request.session.create().
-        # self.assertIsNotNone(session_id)  # Check that session_id is created
-        request.session.create.assert_called_once()  # Ensure create is called
-
     def test_contact_submitted_view(self):
         # Arrange
         contact_type = "support"
@@ -377,57 +358,4 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, 'main/contact-submitted.html')
         self.assertIn('contact_type', response.context)
         self.assertEqual(response.context['contact_type'], contact_type)
-
-    @patch('main.views.add_product')
-    @patch('main.views.get_serialized_cart')
-    def test_api_gateway_update_cart_item_quantity(self, mock_get_serialized_cart, mock_add_product):
-        # Arrange
-        api_path = 'update-cart-item-quantity'
-        mock_request_data = {
-            'cart_id': '1',
-            'product_id': 2,
-            'quantity': 5,
-            'instructions': 'No onions'
-        }
-        mock_get_serialized_cart.return_value = {
-            'key': 'value'
-        }
-
-        url = reverse('api_gateway', args=[api_path])  # Replace with the actual name of your URL pattern
-
-        # Act
-        response = self.client.post(url, data=json.dumps(mock_request_data), content_type='application/json', type=json)
-
-        # Assert
-        self.assertEqual(response.status_code, 200)
-        mock_add_product.assert_called_once_with(1, 2, 5, 'No onions')
-        mock_get_serialized_cart.assert_called_once()
-        self.assertEqual(response.data, {'key': 'value'})  # Adjust based on actual output
-
-    def test_api_gateway_unrecognized_api_path(self):
-        # Arrange
-        api_path = 'unknown-path'
-        url = reverse('api_gateway', args=[api_path])
-
-        # Act
-        response = self.client.post(url)
-
-        # Assert
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {'message': 'Hello from Django!'})
-
-    @patch('main.views.get_session_id')
-    def test_get_serialized_cart(self, mock_get_session_id):
-        Cart.objects.create(session_id='12345')
-        cart = Cart.objects.get(session_id='12345')
-        CartItem.objects.create(cart=cart, product=Product.objects.get(name='Laptop'), quantity=1)
-
-        mock_get_session_id.return_value = '12345'
-
-        unused_request = None
-        response = get_serialized_cart(unused_request)
-
-        self.assertEqual(response['id'],1)
-        self.assertEqual(response['session_id'], '12345')
-        self.assertEqual(len(response['cart_items']), 1)
 
