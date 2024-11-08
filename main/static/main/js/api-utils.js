@@ -1,7 +1,7 @@
 // Put async javascript calls in here to the server that do not require a full page reload.
 
 export function updateCartItem(cartId, quantity, productId, instructions) {
-    return fetch("/api-gateway/update-cart-item-quantity", {
+    return fetch("/api/update-cart-item-quantity", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -11,7 +11,7 @@ export function updateCartItem(cartId, quantity, productId, instructions) {
             cart_id: cartId,
             quantity: quantity,
             product_id: productId,
-            instructions: instructions === undefined ? null : instructions
+            instructions: !instructions ? null : instructions
         })
     }).then(response => response.json());
 }

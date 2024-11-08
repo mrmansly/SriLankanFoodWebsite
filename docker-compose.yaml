@@ -11,6 +11,7 @@ services:
       - DJANGO_CSRF_TRUSTED_ORIGINS=${DJANGO_CSRF_TRUSTED_ORIGINS}
       - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
       - DJANGO_ENV=${DJANGO_ENV}
+      - ANGULAR_APP_URL=${ANGULAR_APP_URL}
     depends_on:
       - unseal_vault
     networks:
@@ -25,13 +26,13 @@ services:
       - IPC_LOCK
     environment:
       - VAULT_ADDR=http://vault:8200
-    volumes:
-      - /vault/data:/vault/data
     ports:
       - "8200:8200"
     restart: unless-stopped
     networks:
       - vault_network
+    volumes:
+      - /vault/data:/vault/data
 
   unseal_vault:
     container_name: unseal_vault

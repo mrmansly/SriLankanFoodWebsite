@@ -1,16 +1,11 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from main.models import Cart, Contact, Faq, FaqCategory, Product, Classification, ContactType
+from main.models import Faq, FaqCategory, Classification
 from main.forms import CheckoutForm, ContactForm
-from .services.cart_service import get_cart, add_product
-from .services.order_service import save_checkout_form
-from .services.price_service import get_all_price_data
-from .services.contact_service import save_contact
-from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from .serializers import CartSerializer, ContactSerializer, ProductSerializer, ClassificationSerializer, \
-    ContactTypeSerializer, FaqCategorySerializer, FaqSerializer
+from ..services.cart_service import get_cart
+from ..services.order_service import save_checkout_form
+from ..services.price_service import get_all_price_data
+from ..services.contact_service import save_contact
+from .request_utils import get_session_id
 
 
 def index_view(response):
@@ -108,73 +103,6 @@ def contact_view(request):
         return render(request, "main/contact.html", {"form": form})
 
 
-def get_session_id(request):
-    session_id = request.session.session_key
-
-    if session_id is None:
-        request.session.create()
-        session_id = request.session.session_key
-
-    return session_id
-
-
 def contact_submitted_view(request, contact_type):
     return render(request, 'main/contact-submitted.html', {'contact_type': contact_type})
 
-
-def get_serialized_cart(request):
-    cart = get_cart(get_session_id(request))
-    cart_serializer = CartSerializer(cart, many=False)
-    return cart_serializer.data
-
-
-@api_view(['POST'])
-def api_gateway_view(request, api_path):
-    if api_path == 'update-cart-item-quantity':
-        request_body = request.data
-        add_product(int(request_body['cart_id']),
-                    int(request_body['product_id']),
-                    int(request_body['quantity']),
-                    request_body['instructions'])
-
-        return Response(get_serialized_cart(request))
-    else:
-        data = {
-            'message': 'Hello from Django!'
-        }
-        return JsonResponse(data)
-
-
-class CartViewSet(viewsets.ModelViewSet):
-    queryset = Cart.objects.all()
-    serializer_class = CartSerializer
-
-
-class ContactViewSet(viewsets.ModelViewSet):
-    queryset = Contact.objects.all()
-    serializer_class = ContactSerializer
-
-
-class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-
-class ClassificationViewSet(viewsets.ModelViewSet):
-    queryset = Classification.objects.all()
-    serializer_class = ClassificationSerializer
-
-
-class ContactTypeViewSet(viewsets.ModelViewSet):
-    queryset = ContactType.objects.all()
-    serializer_class = ContactTypeSerializer
-
-
-class FaqCategoryViewSet(viewsets.ModelViewSet):
-    queryset = FaqCategory.objects.all()
-    serializer_class = FaqCategorySerializer
-
-
-class FaqViewSet(viewsets.ModelViewSet):
-    queryset = Faq.objects.all()
-    serializer_class = FaqSerializer

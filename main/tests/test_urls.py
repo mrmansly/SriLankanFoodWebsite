@@ -1,7 +1,8 @@
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
-from main.views import index_view, menu_view, checkout_view, about_view, \
-    order_view, faq_view, contact_view, api_gateway_view, contact_submitted_view
+from main.views.web_views import index_view, menu_view, checkout_view, about_view, \
+    order_view, faq_view, contact_view, contact_submitted_view
+from main.views.api_views import CartItemQuantityUpdateView
 
 
 class TestUrls(SimpleTestCase):
@@ -35,8 +36,8 @@ class TestUrls(SimpleTestCase):
         self.assertEqual(resolve(url).func, contact_view)
 
     def test_api_gateway_url_resolves(self):
-        url = reverse('api_gateway', args=['api-path'])
-        self.assertEqual(resolve(url).func, api_gateway_view)
+        url = reverse('update_cart_item_api')
+        self.assertEqual(resolve(url).func.view_class, CartItemQuantityUpdateView)
 
     def test_contact_submitted_url_resolves(self):
         url = reverse('contact_submitted', args=['contact-type'])

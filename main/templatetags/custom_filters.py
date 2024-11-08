@@ -47,6 +47,7 @@ def use_cart_item_instructions(product_id, args):
 
     for cart_item in cart_items:
         # if multiple, only return the first instruction
-        return cart_item.instructions
+        if cart_item.instructions:
+            return cart_item.instructions
 
     return ""
