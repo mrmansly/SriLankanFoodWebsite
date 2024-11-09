@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from main.models import Classification
 from main.serializers import ClassificationSerializer
+from ..security_testing_utils import get_authenticated_client
 
 
 class ClassificationViewSetTest(APITestCase):
@@ -12,9 +13,17 @@ class ClassificationViewSetTest(APITestCase):
         # Create initial data for tests
         cls.classification = Classification.objects.create(name="Test Classification", description="Description")
 
+    def test_list_classification_when_unauthenticated(self):
+        url = reverse('classification-list')  # Update with your viewset's URL name
+        self.client = get_authenticated_client(False)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_list_classifications(self):
         """Test retrieving the list of classifications"""
         url = reverse('classification-list')  # Update with your viewset's URL name
+
+        self.client = get_authenticated_client()
         response = self.client.get(url)
 
         classifications = Classification.objects.all()
@@ -27,6 +36,7 @@ class ClassificationViewSetTest(APITestCase):
         """Test creating a new classification"""
         url = reverse('classification-list')  # Update with your viewset's URL name
         data = {"name": "New Classification", "description": "New Description"}
+        self.client=get_authenticated_client()
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -37,6 +47,7 @@ class ClassificationViewSetTest(APITestCase):
     def test_retrieve_classification(self):
         """Test retrieving a specific classification"""
         url = reverse('classification-detail', args=[self.classification.id])
+        self.client = get_authenticated_client()
         response = self.client.get(url)
 
         serializer = ClassificationSerializer(self.classification)
@@ -48,6 +59,7 @@ class ClassificationViewSetTest(APITestCase):
         """Test updating an existing classification"""
         url = reverse('classification-detail', args=[self.classification.id])
         data = {"name": "Updated Classification", "description": "Updated Description"}
+        self.client = get_authenticated_client()
         response = self.client.put(url, data, format='json')
 
         self.classification.refresh_from_db()
@@ -58,6 +70,7 @@ class ClassificationViewSetTest(APITestCase):
     def test_delete_classification(self):
         """Test deleting a classification"""
         url = reverse('classification-detail', args=[self.classification.id])
+        self.client = get_authenticated_client()
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

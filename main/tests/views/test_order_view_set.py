@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
-
+from ..security_testing_utils import get_authenticated_client
 from main.models import Order
 from main.serializers import OrderSerializer
 
@@ -50,9 +50,17 @@ class OrderViewSetTest(APITestCase):
             cancelled_date=timezone.now()
         )
 
+    def test_list_orders_when_unauthenticated(self):
+        """Test retrieving a list of all orders."""
+        url = reverse('order-list')
+        self.client = get_authenticated_client(False)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_list_orders(self):
         """Test retrieving a list of all orders."""
         url = reverse('order-list')
+        self.client = get_authenticated_client()
         response = self.client.get(url)
         orders = Order.objects.all()
         serializer = OrderSerializer(orders, many=True)
@@ -72,6 +80,7 @@ class OrderViewSetTest(APITestCase):
             'completed_date': None,
             'cancelled_date': None,
         }
+        self.client = get_authenticated_client()
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Order.objects.count(), 4)  # 3 from setUpTestData + 1 new
@@ -90,6 +99,7 @@ class OrderViewSetTest(APITestCase):
             'completed_date': None,
             'cancelled_date': self.next_date,
         }
+        self.client = get_authenticated_client()
         response = self.client.put(url, data, format='json')
         self.active_order.refresh_from_db()  # Refresh instance with updated values
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -108,6 +118,7 @@ class OrderViewSetTest(APITestCase):
         data = {
             'cancelled_date': self.next_date,
         }
+        self.client = get_authenticated_client()
         response = self.client.patch(url, data, format='json')
         self.completed_order.refresh_from_db()  # Refresh instance with updated values
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -116,6 +127,7 @@ class OrderViewSetTest(APITestCase):
     def test_delete_order(self):
         """Test deleting an order."""
         url = reverse('order-detail', args=[self.cancelled_order.id])
+        self.client = get_authenticated_client()
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Order.objects.count(), 2)  # 3 initial - 1 deleted
@@ -123,6 +135,7 @@ class OrderViewSetTest(APITestCase):
     def test_filter_orders_by_status_active(self):
         """Test filtering orders by 'active' status."""
         url = reverse('order-list')
+        self.client = get_authenticated_client()
         response = self.client.get(url, {'status': 'active'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -131,6 +144,7 @@ class OrderViewSetTest(APITestCase):
     def test_filter_orders_by_status_completed(self):
         """Test filtering orders by 'completed' status."""
         url = reverse('order-list')
+        self.client = get_authenticated_client()
         response = self.client.get(url, {'status': 'completed'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -139,6 +153,7 @@ class OrderViewSetTest(APITestCase):
     def test_filter_orders_by_status_cancelled(self):
         """Test filtering orders by 'cancelled' status."""
         url = reverse('order-list')
+        self.client = get_authenticated_client()
         response = self.client.get(url, {'status': 'cancelled'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)

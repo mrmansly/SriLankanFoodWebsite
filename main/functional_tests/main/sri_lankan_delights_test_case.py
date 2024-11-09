@@ -2,7 +2,7 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.common.by import By
 from ..main.acknowledgement_of_country.acknowledgement_of_country_locators import AcknowledgementOfCountryLocators
-from ..main.testing_utils import get_web_driver
+from ..main.web_driver_test_factory import get_web_driver
 from main.models import SystemPreference
 from main.enums import SystemPreferenceName
 

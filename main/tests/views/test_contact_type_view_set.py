@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from main.models import ContactType, ContactTypeEnum
 from main.serializers import ContactTypeSerializer
+from ..security_testing_utils import get_authenticated_client
 
 
 class ContactTypeViewSetTest(APITestCase):
@@ -12,9 +13,16 @@ class ContactTypeViewSetTest(APITestCase):
         cls.contact_type = ContactType.objects.create(type='Review Type',
                                                       description="Review Description")
 
+    def test_list_contact_types_when_unauthenticated(self):
+        url = reverse('contact-type-list')
+        self.client = get_authenticated_client(False)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_list_contact_types(self):
         """Test retrieving the list of contact types"""
         url = reverse('contact-type-list')  # Update with your viewset's URL name
+        self.client = get_authenticated_client()
         response = self.client.get(url)
 
         contact_types = ContactType.objects.all()
@@ -27,6 +35,7 @@ class ContactTypeViewSetTest(APITestCase):
         """Test creating a new contact type"""
         url = reverse('contact-type-list')  # Update with your viewset's URL name
         data = {"type": 'Feedback Type', "description": "Feedback"}
+        self.client = get_authenticated_client()
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -37,6 +46,7 @@ class ContactTypeViewSetTest(APITestCase):
     def test_retrieve_contact_type(self):
         """Test retrieving a specific contact type"""
         url = reverse('contact-type-detail', args=[self.contact_type.id])
+        self.client = get_authenticated_client()
         response = self.client.get(url)
 
         serializer = ContactTypeSerializer(self.contact_type)
@@ -48,6 +58,7 @@ class ContactTypeViewSetTest(APITestCase):
         """Test updating an existing contact type"""
         url = reverse('contact-type-detail', args=[self.contact_type.id])
         data = {"type": 'Website Type', "description": "Website"}
+        self.client = get_authenticated_client()
         response = self.client.put(url, data, format='json')
 
         self.contact_type.refresh_from_db()
@@ -58,6 +69,7 @@ class ContactTypeViewSetTest(APITestCase):
     def test_delete_contact_type(self):
         """Test deleting a contact type"""
         url = reverse('contact-type-detail', args=[self.contact_type.id])
+        self.client = get_authenticated_client()
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

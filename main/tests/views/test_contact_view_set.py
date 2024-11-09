@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from main.models import Contact, ContactType, ContactTypeEnum
 from main.serializers import ContactSerializer
+from ..security_testing_utils import get_authenticated_client
 
 
 class ContactViewSetTests(APITestCase):
@@ -22,8 +23,14 @@ class ContactViewSetTests(APITestCase):
         self.contact2 = Contact.objects.create(type=self.feedbackContactType, title="Contact2", message="message2")
         self.list_url = reverse('contact-list')
 
+    def test_list_contacts_when_unauthenticated(self):
+        self.client = get_authenticated_client(False)
+        response = self.client.get(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_list_contacts(self):
         # Test retrieving all contacts
+        self.client = get_authenticated_client()
         response = self.client.get(self.list_url)
         contacts = Contact.objects.all()
         serializer = ContactSerializer(contacts, many=True)
@@ -33,6 +40,7 @@ class ContactViewSetTests(APITestCase):
     def test_retrieve_contact(self):
         # Test retrieving a single contact by ID
         url = reverse('contact-detail', args=[self.contact1.id])
+        self.client = get_authenticated_client()
         response = self.client.get(url)
         serializer = ContactSerializer(self.contact1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -45,6 +53,7 @@ class ContactViewSetTests(APITestCase):
             'title': 'New Contact',
             'message': 'Message'
         }
+        self.client = get_authenticated_client()
         response = self.client.post(self.list_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Contact.objects.count(), 3)
@@ -59,6 +68,7 @@ class ContactViewSetTests(APITestCase):
             'message': 'New Message',
             'rating': '2'
         }
+        self.client = get_authenticated_client()
         response = self.client.put(url, data, format='json')
         self.contact1.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -71,6 +81,7 @@ class ContactViewSetTests(APITestCase):
         # Test partially updating an existing contact (PATCH)
         url = reverse('contact-detail', args=[self.contact2.id])
         data = {'message': 'Janet Smith'}
+        self.client = get_authenticated_client()
         response = self.client.patch(url, data, format='json')
         self.contact2.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -79,6 +90,7 @@ class ContactViewSetTests(APITestCase):
     def test_delete_contact(self):
         # Test deleting a contact
         url = reverse('contact-detail', args=[self.contact1.id])
+        self.client = get_authenticated_client()
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Contact.objects.count(), 1)
