@@ -4,8 +4,9 @@ from unittest.mock import patch
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from datetime import timedelta
+from django.contrib.auth.models import User
 
-from main.models import (User, Classification, Product, Cart, CartItem, Order,
+from main.models import (UserDetails, Classification, Product, Cart, CartItem, Order,
                          FaqCategory, Faq, OrderProduct, ContactType, Contact,
                          SystemPreference, ProductStock, EmailConfiguration)
 
@@ -19,11 +20,14 @@ class TestModels(TestCase):
         )
 
         self.user1 = User.objects.create(
-            user_name='user1',
-            password='password',
-            first_name='first',
-            last_name='last',
-            email='email'
+            username='username',
+            password='password'
+        )
+
+        self.user1Details = UserDetails.objects.create(
+            user=self.user1,
+            mobile='0418502799',
+            home_phone='+61894571664'
         )
 
         self.cart1 = Cart.objects.create(
@@ -78,16 +82,6 @@ class TestModels(TestCase):
             from_email='fromemail@discard.com'
         )
 
-    def test_user_unique_user_name(self):
-        with self.assertRaises(IntegrityError):
-            User.objects.create(
-                user_name='user1',
-                password='password',
-                first_name='first',
-                last_name='last',
-                email='email'
-            )
-
     def test_product_unique_name(self):
         with self.assertRaises(IntegrityError):
             Product.objects.create(
@@ -104,11 +98,8 @@ class TestModels(TestCase):
 
     def test_cart_with_non_existing_user(self):
         user = User(
-            user_name='user2',
+            username='user2',
             password='password',
-            first_name='first',
-            last_name='last',
-            email='email'
         )
 
         # user doesn't exist, hence FK constraint is broken
@@ -396,3 +387,11 @@ class TestModels(TestCase):
     def test_email_configuration_duplicate(self):
         with self.assertRaises(IntegrityError):
             EmailConfiguration.objects.create(type=self.email_configuration.type, from_email="anotheremail@discard.com")
+
+    def test_user_details(self):
+        user_details = UserDetails.objects.get(user_id=self.user1.id)
+        self.assertEqual(user_details.mobile, self.user1Details.mobile)
+
+    def test_user_details_duplicate_user(self):
+        with self.assertRaises(IntegrityError):
+            UserDetails.objects.create(user=self.user1, mobile='mobile')

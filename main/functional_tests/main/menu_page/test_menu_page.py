@@ -1,3 +1,5 @@
+import time
+
 from ..sri_lankan_delights_test_case import SriLankanDelightsTestCase
 
 from django.urls import reverse
@@ -19,7 +21,10 @@ class TestMenuPage(SriLankanDelightsTestCase):
     def test_add_product(self):
 
         # add cart item by clicking the + icon
-        add_qty_button = self.browser.find_element(By.CLASS_NAME, 'add-quantity')
+        add_qty_button = WebDriverWait(self.browser, 5).until(
+            EC.visibility_of_element_located((By.CLASS_NAME, 'add-quantity'))
+        )
+
         add_qty_button.click()
 
         # verify that the cart has added one item
@@ -34,5 +39,8 @@ class TestMenuPage(SriLankanDelightsTestCase):
 
         # add another cart item to verify
         add_qty_button.click()
+
+        time.sleep(0.5)
+
         self.assertEqual(int(cart_items.text), 2)
 

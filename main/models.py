@@ -3,9 +3,12 @@ from django.utils import timezone
 from .enums import ContactNotificationTypeEnum, ContactTypeEnum
 from django.core.exceptions import ValidationError
 from .services.phone_validation_service import validate_mobile, validate_landline
+from django.contrib.auth import get_user_model
 
 
 # Create your models here.
+
+# This User model is no longer used
 class User(models.Model):
     user_name = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=128)
@@ -19,6 +22,17 @@ class User(models.Model):
 
     def __str__(self):
         return f"Username {self.user_name}: {self.first_name} {self.last_name}"
+
+
+class UserDetails(models.Model):
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name='details')
+    mobile = models.CharField(max_length=20, null=True)
+    home_phone = models.CharField(max_length=20, null=True)
+    created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    def __str__(self):
+        return f"User Details for {self.user.name}: {self.mobile} {self.home_phone}"
 
 
 class Classification(models.Model):
@@ -50,7 +64,7 @@ class Product(models.Model):
 
 # A cart can ONLY be associated to one user or session id.
 class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, unique=True)
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, null=True, blank=True, unique=True)
     # Used if there is no associated user logged in at the time
     session_id = models.CharField(null=True, max_length=40, blank=True, unique=True)
     created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -67,7 +81,7 @@ class Cart(models.Model):
     def __str__(self):
         string_result = f"Cart {self.id}"
         if self.user is not None:
-            string_result += f" belongs to {self.user.user_name}"
+            string_result += f" belongs to {self.user.name}"
         return string_result
 
 

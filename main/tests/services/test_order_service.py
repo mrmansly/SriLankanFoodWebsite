@@ -1,13 +1,13 @@
 from django.test import TestCase
 from main.models import Cart, Order, ProductStock, Product, OrderProduct
-from main.fixtures.fixture_loader_utils import load_sample_cart, load_sample_order
+from main.fixtures.fixture_loader_utils import load_sample_session_cart, load_sample_order
 from main.services.order_service import save_order_products
 
 
 class TestOrderService(TestCase):
 
     def setUp(self):
-        load_sample_cart()
+        load_sample_session_cart()
         load_sample_order()
 
     def test_save_order_products_with_remaining_stock_decrement(self):
