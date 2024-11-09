@@ -7,23 +7,6 @@ from django.contrib.auth import get_user_model
 
 
 # Create your models here.
-
-# This User model is no longer used
-class User(models.Model):
-    user_name = models.CharField(max_length=50, unique=True)
-    password = models.CharField(max_length=128)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.EmailField()
-    mobile = models.CharField(max_length=20, null=True)
-    home_phone = models.CharField(max_length=20, null=True)
-    created_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    updated_date = models.DateTimeField(auto_now=True, null=True, blank=True)
-
-    def __str__(self):
-        return f"Username {self.user_name}: {self.first_name} {self.last_name}"
-
-
 class UserDetails(models.Model):
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name='details')
     mobile = models.CharField(max_length=20, null=True)

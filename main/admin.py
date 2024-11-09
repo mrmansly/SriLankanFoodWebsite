@@ -1,5 +1,5 @@
 from django.contrib import admin
-from . models import Cart, CartItem, FaqCategory, Faq, User, Product, Order, OrderProduct, Classification, Contact, \
+from . models import Cart, CartItem, FaqCategory, Faq, Product, Order, OrderProduct, Classification, Contact, \
     ContactType, SystemPreference, ProductStock, EmailConfiguration
 
 
@@ -22,7 +22,6 @@ class CartItemAdmin(admin.ModelAdmin):
 # Register your models here.
 admin.site.register(Cart, CartAdmin)
 admin.site.register(CartItem, CartItemAdmin)
-admin.site.register(User)
 admin.site.register(Product)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderProduct, OrderProductAdmin)
