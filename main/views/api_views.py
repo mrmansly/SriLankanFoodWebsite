@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from ..services.cart_service import add_product
@@ -10,18 +11,42 @@ from django_filters import rest_framework as filters
 
 
 class CartItemQuantityUpdateView(APIView):
+
+    # For now, allow anyone to call this API as user may not have a login at this point
+    permission_classes = [AllowAny]
+
     def post(self, request):
         serializer = CartItemQuantityUpdateSerializer(data=request.data)
         if serializer.is_valid():
-            # Process the data
-            add_product(
-                serializer.validated_data['cart_id'],
-                serializer.validated_data['product_id'],
-                serializer.validated_data['quantity'],
-                serializer.validated_data.get('instructions')
-            )
-            return Response(self.get_serialized_cart(serializer.validated_data['cart_id']), status=status.HTTP_200_OK)
+            if self.validate_request_matches_with_cart(serializer.validated_data['cart_id'], request):
+                # Process the data
+                add_product(
+                    serializer.validated_data['cart_id'],
+                    serializer.validated_data['product_id'],
+                    serializer.validated_data['quantity'],
+                    serializer.validated_data.get('instructions')
+                )
+                return Response(self.get_serialized_cart(serializer.validated_data['cart_id']), status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "Invalid cart or session mismatch."}, status=status.HTTP_400_BAD_REQUEST)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Validate that the user's request matches with the cart they are trying to update.
+    def validate_request_matches_with_cart(self, cart_id, request) -> bool:
+        # first check carts belonging to the user as the session may have expired
+        cart = None
+        if request.user.is_authenticated:
+            cart = Cart.objects.filter(user_id=request.user.id, id=cart_id)
+
+        if cart is None:
+            # check on session instead (assuming session has not expired from when cart was first created)
+            cart = Cart.objects.filter(session_id=request.session.session_key, id=cart_id)
+
+        if not cart:
+            return False
+
+        return True
 
     def get_serialized_cart(self, cart_id):
         cart = Cart.objects.prefetch_related('cart_items').get(id = cart_id)

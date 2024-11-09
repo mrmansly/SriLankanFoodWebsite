@@ -7,11 +7,15 @@ function getCartId() {
 export function updateCartItemDetails(quantity, product_id, instructions) {
     return updateCartItem(getCartId(), quantity, product_id, instructions)
         .then(data => {
-            const items = data['cart_items'].reduce((accumulator, currentValue) => {
-                return accumulator + currentValue['quantity'];
-            }, 0);
+            if (!data.error) {
+                const items = data['cart_items'].reduce((accumulator, currentValue) => {
+                    return accumulator + currentValue['quantity'];
+                }, 0);
 
-            updateCartItems(items);
-            return data;
+                updateCartItems(items);
+                return data;
+            } else {
+                throw Error(data.error);
+            }
         });
 }
