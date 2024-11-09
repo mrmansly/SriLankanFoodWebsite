@@ -1,10 +1,10 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from main.models import Product
-from main.serializers import ProductSerializer
+from ..security_testing_utils import get_authenticated_client
 
 
-class ProductViewSetTestCase(APITestCase):
+class ProductViewSetTest(APITestCase):
     def setUp(self):
         """
         Set up test data, including any initial Product objects that can be used in tests.
@@ -18,10 +18,19 @@ class ProductViewSetTestCase(APITestCase):
         self.product = Product.objects.create(**self.product_data)
         self.url = '/api/products/'  # Update this with your actual API endpoint path
 
+    def test_product_list_when_unauthenticated(self):
+        """
+        Test the list view of the ProductViewSet (GET /api/products/).
+        """
+        self.client = get_authenticated_client(False)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_product_list(self):
         """
         Test the list view of the ProductViewSet (GET /api/products/).
         """
+        self.client = get_authenticated_client()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Ensure the product list includes the product we created
@@ -37,6 +46,7 @@ class ProductViewSetTestCase(APITestCase):
             'description': 'Description for the new product',
             'price': 150.0
         }
+        self.client = get_authenticated_client()
         response = self.client.post(self.url, new_product_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # Verify that the product is created and the response data is correct
@@ -48,12 +58,14 @@ class ProductViewSetTestCase(APITestCase):
         """
         Test the detail view of the ProductViewSet (GET /api/products/{id}/).
         """
+        self.client = get_authenticated_client()
         response = self.client.get(f'{self.url}{self.product.id}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Verify that the correct product is returned
         self.assertEqual(response.data['name'], self.product.name)
         self.assertEqual(response.data['description'], self.product.description)
         self.assertEqual(response.data['price'], self.product.price)
+
 
     def test_product_update(self):
         """
@@ -64,6 +76,7 @@ class ProductViewSetTestCase(APITestCase):
             'description': 'Updated description',
             'price': 120.0
         }
+        self.client = get_authenticated_client()
         response = self.client.put(f'{self.url}{self.product.id}/', updated_product_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Verify that the product data has been updated
@@ -75,6 +88,7 @@ class ProductViewSetTestCase(APITestCase):
         """
         Test the delete view of the ProductViewSet (DELETE /api/products/{id}/).
         """
+        self.client = get_authenticated_client()
         response = self.client.delete(f'{self.url}{self.product.id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         # Verify that the product has been deleted
@@ -89,6 +103,7 @@ class ProductViewSetTestCase(APITestCase):
             'description': 'A product with no name',
             'price': 100.0
         }
+        self.client = get_authenticated_client()
         response = self.client.post(self.url, invalid_product_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         # Verify that the response contains an error related to the 'name' field

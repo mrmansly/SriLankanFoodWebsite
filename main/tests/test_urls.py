@@ -3,6 +3,7 @@ from django.urls import reverse, resolve
 from main.views.web_views import index_view, menu_view, checkout_view, about_view, \
     order_view, faq_view, contact_view, contact_submitted_view
 from main.views.api_views import CartItemQuantityUpdateView
+from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 
 class TestUrls(SimpleTestCase):
@@ -35,10 +36,18 @@ class TestUrls(SimpleTestCase):
         url = reverse('contact')
         self.assertEqual(resolve(url).func, contact_view)
 
-    def test_api_gateway_url_resolves(self):
+    def test_api_update_cart_item_quantity_resolves(self):
         url = reverse('update_cart_item_api')
         self.assertEqual(resolve(url).func.view_class, CartItemQuantityUpdateView)
 
     def test_contact_submitted_url_resolves(self):
         url = reverse('contact_submitted', args=['contact-type'])
         self.assertEqual(resolve(url).func, contact_submitted_view)
+
+    def test_api_token_obtain_resolves(self):
+        url = reverse('token_obtain_pair')
+        self.assertEqual(resolve(url).func.view_class, TokenObtainPairView)
+
+    def test_api_token_refresh_resolves(self):
+        url = reverse('token_refresh')
+        self.assertEqual(resolve(url).func.view_class, TokenRefreshView)

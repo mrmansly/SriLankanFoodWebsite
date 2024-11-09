@@ -1,23 +1,38 @@
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
+from ..security_testing_utils import get_access_token, get_authenticated_user
 from django.urls import reverse
-from main.models import Cart, User
+from main.models import Cart
+from unittest import mock
 from main.serializers import CartSerializer
 
 
-class CartViewSetTests(APITestCase):
+class CartViewSetTest(APITestCase):
 
     def setUp(self):
-        # Create a user and a cart associated with that user
-        self.user = User.objects.create(user_name='testuser', password='testpassword')
-        self.cart = Cart.objects.create(user=self.user)
 
-        # Set up the APIClient and log in the user if needed
+        # Set up the APIClient and log in the to allow API to be called
         self.client = APIClient()
-        self.client.force_authenticate(user=self.user)
+        self.client.force_authenticate(user=get_authenticated_user())
+
+        self.cart = Cart.objects.create(session_id="sessionId")
 
         # Set the endpoint URL for convenience
         self.list_url = reverse('cart-list')  # This assumes you have a named route for CartViewSet
+
+    # Add a test for checking API unauthorised access
+    def test_list_carts_when_unauthenticated(self):
+
+        with mock.patch.object(self, 'setUp', lambda x: None):
+            self.client = APIClient()
+            self.client.force_authenticate(user=None)
+            self.list_url = reverse('cart-list')
+
+            """Test the list endpoint of the CartViewSet is blocked"""
+            response = self.client.get(self.list_url)
+
+            # Assert that the response is 401 Unauthorised
+            self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list_carts(self):
         """Test the list endpoint of the CartViewSet"""
@@ -53,7 +68,6 @@ class CartViewSetTests(APITestCase):
         """Test the update endpoint of the CartViewSet"""
         update_url = reverse('cart-detail', args=[self.cart.id])
         data = {
-            "user": self.user.id,
             "session_id": "updated_session_id"
         }
         response = self.client.put(update_url, data, format='json')

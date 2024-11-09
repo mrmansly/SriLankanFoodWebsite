@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from main.models import Faq, FaqCategory
 from main.serializers import FaqSerializer
+from ..security_testing_utils import get_authenticated_client
 
 
 class FaqViewSetTest(APITestCase):
@@ -18,9 +19,17 @@ class FaqViewSetTest(APITestCase):
             category=cls.faq_category
         )
 
+    def test_list_faqs_when_unauthenticated(self):
+        """Test retrieving the list of FAQs"""
+        url = reverse('faq-list')  # Update with your viewset's URL name
+        self.client = get_authenticated_client(False)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_list_faqs(self):
         """Test retrieving the list of FAQs"""
         url = reverse('faq-list')  # Update with your viewset's URL name
+        self.client = get_authenticated_client()
         response = self.client.get(url)
 
         faqs = Faq.objects.all()
@@ -33,6 +42,7 @@ class FaqViewSetTest(APITestCase):
         """Test creating a new FAQ"""
         url = reverse('faq-list')  # Update with your viewset's URL name
         data = {"question": "How do I use this?", "answer": "This is how you use it.", "category": self.faq_category.id}
+        self.client = get_authenticated_client()
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -44,6 +54,7 @@ class FaqViewSetTest(APITestCase):
     def test_retrieve_faq(self):
         """Test retrieving a specific FAQ"""
         url = reverse('faq-detail', args=[self.faq.id])
+        self.client = get_authenticated_client()
         response = self.client.get(url)
 
         serializer = FaqSerializer(self.faq)
@@ -57,6 +68,7 @@ class FaqViewSetTest(APITestCase):
 
         new_faq_category = FaqCategory.objects.create(category="New Category", description="Desc")
         data = {"question": "Updated FAQ question", "answer": "Updated FAQ answer", "category": new_faq_category.id}
+        self.client = get_authenticated_client()
         response = self.client.put(url, data, format='json')
 
         self.faq.refresh_from_db()
@@ -68,6 +80,7 @@ class FaqViewSetTest(APITestCase):
     def test_delete_faq(self):
         """Test deleting an FAQ"""
         url = reverse('faq-detail', args=[self.faq.id])
+        self.client = get_authenticated_client()
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

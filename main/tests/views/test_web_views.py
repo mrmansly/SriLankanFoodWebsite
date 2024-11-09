@@ -8,7 +8,7 @@ from main.models import Cart, CartItem, Product, Classification, ContactType, \
     Faq, FaqCategory, Order, OrderProduct, ProductStock
 
 
-class TestWebViews(TestCase):
+class WebViewsTest(TestCase):
 
     def setUp(self):
 
