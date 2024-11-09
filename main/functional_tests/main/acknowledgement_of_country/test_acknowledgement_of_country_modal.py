@@ -3,7 +3,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from .acknowledgement_of_country_locators import AcknowledgementOfCountryLocators as Locators
 from ..base_page.base_page_locators import BasePageLocators
 from ..menu_page.menu_page_assertions import MenuPageAssertions
-from ..testing_utils import get_web_driver
+from ..web_driver_test_factory import get_web_driver
 
 
 # Test the acknowledgement of country banner that pops up for the first time you enter this website.

@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views.api_views import (CartViewSet, ContactViewSet, ClassificationViewSet, ProductViewSet, FaqCategoryViewSet,
                               FaqViewSet, ContactTypeViewSet, OrderViewSet)
+from rest_framework_simplejwt import views as jwt_views
 
 from .views import web_views, api_views
 
@@ -26,5 +27,7 @@ urlpatterns = [
     path("api/update-cart-item-quantity", api_views.CartItemQuantityUpdateView.as_view(), name='update_cart_item_api'),
     path("contact-submitted/<str:contact_type>", web_views.contact_submitted_view, name="contact_submitted"),
     # api specific paths
-    path('api/', include(router.urls))
+    path('api/', include(router.urls)),
+    path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh', jwt_views.TokenRefreshView.as_view(), name='token_refresh')
 ]
